@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+/* Tokens del diseño aprobado (CLAUDE.md §7 — versión hero rojo) */
+@theme {
+  --color-rojo: #ec3237;
+  --color-amarillo: #ffeb04;
+  --color-dorado: #c9a800;
+  --color-verde: #475d2d;
+  --color-verde-osc: #36471f;
+  --color-papel: #fafaf6;
+  --color-texto: #1d1d1b;
+  --color-linea: #e4e3db;
+
+  --font-display: var(--font-archivo), sans-serif;
+  --font-sans: var(--font-public-sans), sans-serif;
+}
+
+body {
+  background-color: var(--color-papel);
+  color: var(--color-texto);
+  font-family: var(--font-sans);
+}
+
+/* Titulares y precios: Archivo condensado, pesado, en mayúsculas */
+.titular {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: condensed;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+/* Firma visual: cartel de precio de góndola (tarjeta rotada con sticker) */
+.cartel {
+  transform: rotate(-2deg);
+  transition: transform 0.2s ease;
+}
+.cartel:hover {
+  transform: rotate(0deg) scale(1.02);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .cartel {
+    transform: none;
+  }
+}

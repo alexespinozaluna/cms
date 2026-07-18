@@ -1,0 +1,11 @@
+# .NET
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+
+# Configuración local con credenciales (usar la plantilla .example)
+api/src/Cms.Api/appsettings.Development.json
+
+# Logs y temporales
+*.log
