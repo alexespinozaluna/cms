@@ -26,6 +26,8 @@
 --                              instancia (docs/Tiendas, docs/Concesionario).
 --   18/07/2026  Alex Espinoza  Login único: los CTA de la banda de portales
 --                              apuntan a /login (un solo acceso).
+--   18/07/2026  Alex Espinoza  Ítem de menú "Consultas" → /consultas (la página
+--                              se crea en contenido_consultas.sql).
 --
 -- Nota de control   : el script es idempotente — puede re-ejecutarse: hace
 --                     upsert de la página, borra y re-inserta sus bloques y
@@ -252,7 +254,8 @@ INSERT INTO menu_items (etiqueta, url, tipo, orden) VALUES
     ('Ofertas',        '/#ofertas',        'contenido', 1),
     ('Tiendas',        '/#tiendas',        'contenido', 2),
     ('Concesionarios', '/#concesionarios', 'contenido', 3),
-    ('Noticias',       '/#noticias',       'contenido', 4);
+    ('Noticias',       '/#noticias',       'contenido', 4),
+    ('Consultas',      '/consultas',       'contenido', 5);
 
 -- ----------------------------------------------------------------------------
 -- 4. Metadata: se agrega el campo 'titulo_resaltado' al esquema de hero_cartel
