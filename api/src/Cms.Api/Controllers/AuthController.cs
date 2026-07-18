@@ -27,7 +27,7 @@ public sealed class AuthController(
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> VerificarDocumento(VerificarDocumentoRequest req, CancellationToken ct)
     {
-        var (persona, error) = await ResolverPersonaDisponibleAsync(req.Documento, req.Tipo, ct);
+        var (persona, error) = await ResolverPersonaDisponibleAsync(req.CodUsuario, ct);
         if (error is not null) return error;
         return Ok(new VerificacionResponse(persona!.Nombre, RolesDe(persona)));
     }
@@ -40,12 +40,12 @@ public sealed class AuthController(
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> Registrar(RegistroRequest req, CancellationToken ct)
     {
-        var (persona, error) = await ResolverPersonaDisponibleAsync(req.Documento, req.Tipo, ct);
+        var (persona, error) = await ResolverPersonaDisponibleAsync(req.CodUsuario, ct);
         if (error is not null) return error;
 
         var usuario = new Usuario
         {
-            UserName = persona!.Cip.Length > 0 ? persona.Cip : (persona.NroDni ?? req.Documento),
+            UserName = persona!.Cip.Length > 0 ? persona.Cip : (persona.NroDni ?? req.CodUsuario),
             Email = req.Correo,
             IdAnexo = persona.IdAnexo,
             Cip = persona.Cip,
@@ -86,12 +86,12 @@ public sealed class AuthController(
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Login(LoginRequest req, CancellationToken ct)
     {
-        var doc = req.Usuario.Trim();
-        var usuario = await usuarios.Users.FirstOrDefaultAsync(u => u.Cip == doc || u.NroDni == doc, ct);
+        var cod = req.CodUsuario.Trim();
+        var usuario = await usuarios.Users.FirstOrDefaultAsync(u => u.Cip == cod, ct);
         if (usuario is null || !await usuarios.CheckPasswordAsync(usuario, req.Password))
             return Unauthorized(new { error = "Credenciales inválidas." });
 
-        var persona = await erp.BuscarPorDocumentoAsync(usuario.Cip ?? usuario.NroDni ?? doc, TipoDocumentoBusqueda.Ambos, ct);
+        var persona = await erp.BuscarPorDocumentoAsync(usuario.Cip ?? cod, TipoDocumentoBusqueda.Cip, ct);
         if (persona is null || !persona.TieneAlgunRol)
             return StatusCode(StatusCodes.Status403Forbidden,
                 new { error = "Su acceso no está habilitado en el ERP." });
@@ -118,9 +118,9 @@ public sealed class AuthController(
     /// verificar-documento y registro.
     /// </summary>
     private async Task<(PersonaErp? persona, IActionResult? error)> ResolverPersonaDisponibleAsync(
-        string documento, int tipo, CancellationToken ct)
+        string codUsuario, CancellationToken ct)
     {
-        var persona = await erp.BuscarPorDocumentoAsync(documento, (TipoDocumentoBusqueda)tipo, ct);
+        var persona = await erp.BuscarPorDocumentoAsync(codUsuario, TipoDocumentoBusqueda.Cip, ct);
         if (persona is null || !persona.TieneAlgunRol)
             return (null, UnprocessableEntity(
                 new { error = "El CIP/DNI no está registrado en el ERP o no tiene un rol habilitado." }));

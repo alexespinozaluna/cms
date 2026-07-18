@@ -31,18 +31,18 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthShell titulo="Iniciar sesión" subtitulo="Ingresa con tu CIP o DNI y tu contraseña.">
+    <AuthShell titulo="Iniciar sesión" subtitulo="Ingresa con tu código de usuario (CIP) y tu contraseña.">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {errorGeneral && (
           <p className="rounded-md bg-rojo/10 px-3 py-2 text-sm text-rojo">{errorGeneral}</p>
         )}
         <CampoTexto
-          id="usuario"
+          id="codUsuario"
           inputMode="numeric"
           autoComplete="username"
-          etiqueta="CIP o DNI"
-          error={errors.usuario?.message}
-          {...register("usuario")}
+          etiqueta="Código de usuario (CIP)"
+          error={errors.codUsuario?.message}
+          {...register("codUsuario")}
         />
         <CampoTexto
           id="password"

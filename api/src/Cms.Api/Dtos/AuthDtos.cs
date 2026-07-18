@@ -2,15 +2,19 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Cms.Api.Dtos;
 
-/// <summary>Verificación previa: existe en el ERP y no está ya registrado.</summary>
+// CodUsuario = CIP (Anexo.CodAnexo): 9 dígitos (militares/trabajadores) o
+// 6 dígitos (proveedores/concesionarios).
+file static class Reglas
+{
+    public const string CodUsuario = @"^(\d{6}|\d{9})$";
+    public const string CodUsuarioMsg = "El código de usuario debe tener 6 o 9 dígitos.";
+}
+
+/// <summary>Verificación previa al registro: existe en el ERP y no está ya registrado.</summary>
 public sealed class VerificarDocumentoRequest
 {
-    [Required, RegularExpression(@"^\d{8,9}$", ErrorMessage = "El CIP/DNI debe tener 8 o 9 dígitos.")]
-    public string Documento { get; set; } = "";
-
-    /// <summary>0 = CIP o DNI, 1 = DNI, 2 = CIP.</summary>
-    [Range(0, 2)]
-    public int Tipo { get; set; }
+    [Required, RegularExpression(Reglas.CodUsuario, ErrorMessage = Reglas.CodUsuarioMsg)]
+    public string CodUsuario { get; set; } = "";
 }
 
 /// <summary>Datos que se muestran/autocompletan cuando la persona es válida.</summary>
@@ -19,12 +23,8 @@ public sealed record VerificacionResponse(string Nombre, IReadOnlyList<string> R
 /// <summary>Registro único: la persona debe existir en el ERP (Anexo) con algún rol.</summary>
 public sealed class RegistroRequest
 {
-    [Required, RegularExpression(@"^\d{8,9}$", ErrorMessage = "El CIP/DNI debe tener 8 o 9 dígitos.")]
-    public string Documento { get; set; } = "";
-
-    /// <summary>0 = CIP o DNI, 1 = DNI, 2 = CIP.</summary>
-    [Range(0, 2)]
-    public int Tipo { get; set; }
+    [Required, RegularExpression(Reglas.CodUsuario, ErrorMessage = Reglas.CodUsuarioMsg)]
+    public string CodUsuario { get; set; } = "";
 
     [Required, EmailAddress]
     public string Correo { get; set; } = "";
@@ -39,11 +39,11 @@ public sealed class RegistroRequest
     public string? NombreCompleto { get; set; }
 }
 
-/// <summary>Login único por usuario (CIP o DNI) + contraseña.</summary>
+/// <summary>Login único por CodUsuario (CIP) + contraseña.</summary>
 public sealed class LoginRequest
 {
     [Required]
-    public string Usuario { get; set; } = "";
+    public string CodUsuario { get; set; } = "";
 
     [Required]
     public string Password { get; set; } = "";

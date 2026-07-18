@@ -88,19 +88,24 @@ Reglas duras:
   rol. Los roles salen de esos flags y **se combinan**: `EsCliente`,
   `EsProveedor`, `EsConcesionario`, `EsTrabajador` (este último solo si además
   `EsDomiciliado=1`). Las opciones del usuario logueado se arman según sus roles.
+- **Identificación por `CodUsuario`** (decisión 18/07/2026): login y registro
+  validan por **CodUsuario = el CIP** (`Anexo.CodAnexo`). Longitud: **9 dígitos**
+  para militares y trabajadores; **6 dígitos** para proveedores y concesionarios
+  (validar `^(\d{6}|\d{9})$`). Ya NO se usa el DNI para identificar.
 - **Credenciales en PostgreSQL** (concepto "AnexoWeb" = usuario de Identity
-  extendido: usuario=CIP/DNI, correo, teléfono, contraseña hasheada, `IdAnexo`).
-  El ERP NO se escribe: se consulta solo lectura (SP/vista sobre `Anexo`, por
-  `CodAnexo` o `Documento`) para validar existencia y traer flags.
-- **Registro**: el form permite elegir **tipo de documento (DNI o CIP)**; la API
-  busca en el ERP según ese tipo (SP `spWebAnexoBuscarPorDocumento @Tipo`).
-  Valida SIEMPRE **(a) que exista en el ERP con algún rol** y **(b) que no esté
-  ya registrado** en PostgreSQL. Si existe y está disponible, **autocompleta el
-  nombre** (y datos) desde el ERP (solo lectura) y recién crea la cuenta con los
-  roles derivados. El botón "Crear" no se puede presionar dos veces.
-- **Login**: usuario (CIP/DNI) + contraseña → valida la contraseña en Postgres
-  y **relee los flags del ERP en vivo** para sincronizar roles (quien pasa a
-  tener otro rol lo gana sin re-registrarse).
+  extendido: usuario=`CodUsuario`, correo, teléfono, contraseña hasheada,
+  `IdAnexo`). El ERP NO se escribe: se consulta solo lectura (SP sobre `Anexo`
+  por `CodAnexo`) para validar existencia y traer flags.
+- **Registro**: se ingresa el `CodUsuario` y se pulsa **Verificar**; la API valida
+  **(a) que exista en el ERP con algún rol** y **(b) que no esté ya registrado**
+  en PostgreSQL, y devuelve el nombre para **autocompletar**. Reglas de UI:
+  - Al validarse el `CodUsuario`, el **botón "Verificar" se bloquea**.
+  - El **botón "Crear cuenta" permanece inactivo** hasta que estén llenos y
+    válidos los campos requeridos (correo, contraseña) y el CodUsuario esté
+    verificado; además no se puede presionar más de una vez (anti doble-envío).
+- **Login**: `CodUsuario` + contraseña → valida la contraseña en Postgres y
+  **relee los flags del ERP en vivo** para sincronizar roles (quien pasa a tener
+  otro rol lo gana sin re-registrarse).
 - Recuperar contraseña: tokens de Identity + enlace por correo (pendiente,
   requiere servicio de correo).
 - `SistemaUsuario` (login del ERP de escritorio) NO se usa ni se toca.

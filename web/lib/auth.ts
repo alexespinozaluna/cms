@@ -2,10 +2,6 @@ import { z } from "zod";
 
 const base = process.env.NEXT_PUBLIC_CONTENT_API_URL ?? "";
 
-/** Tipo de documento (coincide con @Tipo del SP). */
-export const TIPO_DNI = 1;
-export const TIPO_CIP = 2;
-
 // ---------- Esquemas (espejo de la validación del backend) ----------
 
 const password = z
@@ -15,19 +11,18 @@ const password = z
   .regex(/[A-Z]/, "Debe incluir una mayúscula.")
   .regex(/\d/, "Debe incluir un número.");
 
-const documento = z.string().regex(/^\d{8,9}$/, "El documento debe tener 8 o 9 dígitos.");
+// CodUsuario = CIP: 9 dígitos (militares/trabajadores) o 6 (proveedores/concesionarios).
+const codUsuario = z.string().regex(/^(\d{6}|\d{9})$/, "El código de usuario debe tener 6 o 9 dígitos.");
 
 export const registroSchema = z.object({
-  // valor del <select> (string); se convierte a número al llamar la API
-  tipo: z.enum([String(TIPO_DNI), String(TIPO_CIP)]),
-  documento,
+  codUsuario,
   correo: z.string().email("Correo inválido."),
   telefono: z.string().max(20).optional().or(z.literal("")),
   password,
 });
 
 export const loginSchema = z.object({
-  usuario: documento,
+  codUsuario,
   password: z.string().min(1, "Ingresa tu contraseña."),
 });
 
@@ -77,13 +72,12 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
 }
 
 /** Paso previo al registro: valida existencia en ERP + no registrado; trae el nombre. */
-export function verificarDocumento(documento: string, tipo: number) {
-  return postJson<Verificacion>("verificar-documento", { documento, tipo });
+export function verificarDocumento(codUsuario: string) {
+  return postJson<Verificacion>("verificar-documento", { codUsuario });
 }
 
 export interface RegistroPayload {
-  documento: string;
-  tipo: number;
+  codUsuario: string;
   correo: string;
   telefono?: string;
   password: string;
