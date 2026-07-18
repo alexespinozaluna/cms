@@ -93,9 +93,16 @@ Reglas duras:
   para militares y trabajadores; **6 dígitos** para proveedores y concesionarios
   (validar `^(\d{6}|\d{9})$`). Ya NO se usa el DNI para identificar.
 - **Credenciales en PostgreSQL** (concepto "AnexoWeb" = usuario de Identity
-  extendido: usuario=`CodUsuario`, correo, teléfono, contraseña hasheada,
-  `IdAnexo`). El ERP NO se escribe: se consulta solo lectura (SP sobre `Anexo`
-  por `CodAnexo`) para validar existencia y traer flags.
+  extendido). Estructura del **Usuario** (esquema `auth`, tabla `AspNetUsers`):
+  `CodUsuario` (= CIP; también es el `UserName`), `Email` (**único**),
+  `Telefono`, `NroDni`, `NroRuc`, `TipoDoc`, `IdUserRef` (= `Anexo.IdAnexo`,
+  **único** cuando existe), `IdUserSistema` (= `Anexo.IdSistemaUsuario`),
+  `NombreCompleto`, `PasswordHash` (Identity). El ERP NO se escribe: se consulta
+  solo lectura (SP `spWebAnexoBuscarPorDocumento` sobre `Anexo` por `CodAnexo`)
+  para validar existencia, traer flags y estos datos.
+- **Correo único**: si el correo ya está en uso por otra cuenta, el registro
+  responde 409 con "El correo ya está registrado con otra cuenta." El campo de
+  identificación se etiqueta en la UI como **"Usuario"**.
 - **Registro**: se ingresa el `CodUsuario` y se pulsa **Verificar**; la API valida
   **(a) que exista en el ERP con algún rol** y **(b) que no esté ya registrado**
   en PostgreSQL, y devuelve el nombre para **autocompletar**. Reglas de UI:

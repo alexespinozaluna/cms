@@ -42,15 +42,18 @@ public sealed class AuthController(
     {
         var (persona, error) = await ResolverPersonaDisponibleAsync(req.CodUsuario, ct);
         if (error is not null) return error;
-
+        // 'persona' garantizado no-nulo cuando error es null
         var usuario = new Usuario
         {
-            UserName = persona!.Cip.Length > 0 ? persona.Cip : (persona.NroDni ?? req.CodUsuario),
+            UserName = persona!.Cip,
+            CodUsuario = persona.Cip,
             Email = req.Correo,
-            IdAnexo = persona.IdAnexo,
-            Cip = persona.Cip,
-            NroDni = persona.NroDni,
             Telefono = req.Telefono,
+            NroDni = persona.NroDni,
+            NroRuc = persona.Ruc,
+            TipoDoc = persona.TipoDocumento,
+            IdUserRef = persona.IdAnexo,
+            IdUserSistema = persona.IdSistemaUsuario,
             NombreCompleto = req.NombreCompleto ?? persona.Nombre,
         };
         var roles = RolesDe(persona);
@@ -60,17 +63,19 @@ public sealed class AuthController(
             var creacion = await usuarios.CreateAsync(usuario, req.Password);
             if (!creacion.Succeeded)
             {
-                // Doble envío que pasó la verificación previa: el índice único de
-                // Identity (UserName) rechaza el segundo → 409 en vez de 400.
-                if (creacion.Errors.Any(e => e.Code.Contains("Duplicate", StringComparison.OrdinalIgnoreCase)))
-                    return Conflict(new { error = "Ya existe una cuenta para esta persona." });
+                // Correo ya usado por OTRA persona (Identity exige correo único).
+                if (creacion.Errors.Any(e => e.Code == "DuplicateEmail"))
+                    return Conflict(new { error = "El correo ya está registrado con otra cuenta." });
+                // Doble envío que pasó la verificación previa: mismo CodUsuario.
+                if (creacion.Errors.Any(e => e.Code == "DuplicateUserName"))
+                    return Conflict(new { error = "Ya existe una cuenta para este usuario." });
                 return BadRequest(new { errores = creacion.Errors.Select(e => e.Description) });
             }
             await usuarios.AddToRolesAsync(usuario, roles);
         }
         catch (DbUpdateException)
         {
-            // Carrera contra el índice único de IdAnexo (doble clic simultáneo).
+            // Carrera contra el índice único de IdUserRef (doble clic simultáneo).
             return Conflict(new { error = "Ya existe una cuenta para esta persona." });
         }
 
@@ -87,11 +92,11 @@ public sealed class AuthController(
     public async Task<IActionResult> Login(LoginRequest req, CancellationToken ct)
     {
         var cod = req.CodUsuario.Trim();
-        var usuario = await usuarios.Users.FirstOrDefaultAsync(u => u.Cip == cod, ct);
+        var usuario = await usuarios.Users.FirstOrDefaultAsync(u => u.CodUsuario == cod, ct);
         if (usuario is null || !await usuarios.CheckPasswordAsync(usuario, req.Password))
             return Unauthorized(new { error = "Credenciales inválidas." });
 
-        var persona = await erp.BuscarPorDocumentoAsync(usuario.Cip ?? cod, TipoDocumentoBusqueda.Cip, ct);
+        var persona = await erp.BuscarPorDocumentoAsync(usuario.CodUsuario ?? cod, TipoDocumentoBusqueda.Cip, ct);
         if (persona is null || !persona.TieneAlgunRol)
             return StatusCode(StatusCodes.Status403Forbidden,
                 new { error = "Su acceso no está habilitado en el ERP." });
@@ -107,8 +112,8 @@ public sealed class AuthController(
     public IActionResult Yo() => Ok(new
     {
         usuario = User.Identity?.Name,
-        idAnexo = User.FindFirstValue("id_anexo"),
-        cip = User.FindFirstValue("cip"),
+        idUserRef = User.FindFirstValue("id_user_ref"),
+        codUsuario = User.FindFirstValue("cod_usuario"),
         roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value),
     });
 
@@ -125,7 +130,7 @@ public sealed class AuthController(
             return (null, UnprocessableEntity(
                 new { error = "El CIP/DNI no está registrado en el ERP o no tiene un rol habilitado." }));
 
-        if (await usuarios.Users.AnyAsync(u => u.IdAnexo == persona.IdAnexo, ct))
+        if (await usuarios.Users.AnyAsync(u => u.IdUserRef == persona.IdAnexo, ct))
             return (null, Conflict(new { error = "Ya existe una cuenta para esta persona. Inicia sesión." }));
 
         return (persona, null);

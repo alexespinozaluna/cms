@@ -31,7 +31,7 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthShell titulo="Iniciar sesión" subtitulo="Ingresa con tu código de usuario (CIP) y tu contraseña.">
+    <AuthShell titulo="Iniciar sesión" subtitulo="Ingresa con tu usuario y tu contraseña.">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {errorGeneral && (
           <p className="rounded-md bg-rojo/10 px-3 py-2 text-sm text-rojo">{errorGeneral}</p>
@@ -40,7 +40,7 @@ export default function LoginPage() {
           id="codUsuario"
           inputMode="numeric"
           autoComplete="username"
-          etiqueta="Código de usuario (CIP)"
+          etiqueta="Usuario"
           error={errors.codUsuario?.message}
           {...register("codUsuario")}
         />

@@ -44,11 +44,12 @@ BEGIN
         A.EsCliente,
         A.EsProveedor,
         A.EsConcesionario,
-        CASE WHEN A.EsTrabajador = 1 AND A.EsDomiciliado = 1 THEN 1 ELSE 0 END AS EsTrabajador
+        CASE WHEN A.EsTrabajador = 1 AND A.EsDomiciliado = 1 THEN 1 ELSE 0 END AS EsTrabajador,
+        a.IdSistemaUsuario
     FROM Anexo A
     INNER JOIN TipoDocumentoIdentidadSunat B
         ON A.IdTipoDocumentoIdentidad = B.IdTipoDocumentoIdentidad
-    WHERE A.EsDesactivado = 0
+    WHERE A.EsDesactivado = 0 AND IdAnexo> 0
       AND (A.EsCliente = 1 OR A.EsProveedor = 1 OR A.EsConcesionario = 1
            OR (A.EsTrabajador = 1 AND A.EsDomiciliado = 1))
       AND (

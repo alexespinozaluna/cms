@@ -84,7 +84,7 @@ export default function RegistroPage() {
   return (
     <AuthShell
       titulo="Crear cuenta"
-      subtitulo="Solo el personal registrado en el bazar (cliente, proveedor, concesionario o trabajador) puede crear una cuenta. Verificamos tu código de usuario (CIP) en el ERP."
+      subtitulo="Solo el personal registrado en el bazar (cliente, proveedor, concesionario o trabajador) puede crear una cuenta. Verificamos tu usuario en el ERP."
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {/* Fase 1: CodUsuario + verificar (el botón se bloquea al validar) */}
@@ -93,7 +93,7 @@ export default function RegistroPage() {
             <CampoTexto
               id="codUsuario"
               inputMode="numeric"
-              etiqueta="Código de usuario (CIP)"
+              etiqueta="Usuario"
               error={errors.codUsuario?.message}
               {...register("codUsuario")}
             />
