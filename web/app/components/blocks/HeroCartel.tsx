@@ -1,9 +1,23 @@
 import type { HeroCartelContenido } from "@/lib/content-api";
 import { formatearPrecio } from "@/lib/formato";
 
+/** Pinta en amarillo el fragmento `resaltado` dentro del título. */
+function Titulo({ texto, resaltado }: { texto: string; resaltado?: string }) {
+  if (!resaltado || !texto.includes(resaltado)) return <>{texto}</>;
+  const inicio = texto.indexOf(resaltado);
+  return (
+    <>
+      {texto.slice(0, inicio)}
+      <span className="text-amarillo">{resaltado}</span>
+      {texto.slice(inicio + resaltado.length)}
+    </>
+  );
+}
+
 /** Hero rojo con el cartel de precio de góndola (firma visual del diseño). */
 export default function HeroCartel({ contenido }: { contenido: HeroCartelContenido }) {
-  const { kicker, titulo, subtitulo, origen, producto, precio, precio_antes } = contenido;
+  const { kicker, titulo, titulo_resaltado, subtitulo, origen, producto, precio, precio_antes } =
+    contenido;
   // En origen 'erp' el precio se resolverá contra la API del ERP (fase posterior);
   // mientras tanto no se inventa precio: solo se muestra el editorial.
   const mostrarCartel = origen === "manual" && producto && precio !== undefined;
@@ -22,7 +36,9 @@ export default function HeroCartel({ contenido }: { contenido: HeroCartelConteni
               {kicker}
             </span>
           )}
-          <h1 className="display mt-4 text-4xl text-white md:text-6xl">{titulo}</h1>
+          <h1 className="display mt-4 text-4xl text-white md:text-6xl">
+            <Titulo texto={titulo} resaltado={titulo_resaltado} />
+          </h1>
           {subtitulo && <p className="mt-4 max-w-[46ch] text-lg text-white/85">{subtitulo}</p>}
         </div>
 

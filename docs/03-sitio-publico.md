@@ -83,16 +83,35 @@ titulares en caja mixta (clase `display`), sticker verde "OFERTA", franja
 amarilla del hero, iniciales de concesionarios y header fijo con accesos de
 portal.
 
-## 4. Pendientes conocidos
+## 4. Remate del sitio público (17/07/2026)
+
+Cerrados los pendientes visuales del paso 2:
+
+- **Footer de 4 columnas** (marca + Explorar / Portales / Contacto) con barra
+  legal, fiel a la maqueta. "Explorar" reusa el menú del CMS; el enlace de
+  Facebook es opcional y sale de configuración (`NEXT_PUBLIC_SITE_FACEBOOK`),
+  respetando la genericidad (sin marca en código).
+- **Hero con resaltado**: nuevo campo de contenido `titulo_resaltado` pinta en
+  amarillo un fragmento del título ("ahora en línea"), sin acoplar el texto al
+  código. Se agregó el campo al esquema de `hero_cartel` (modelo base y patch
+  idempotente para la BD existente).
+- **Páginas legales**: `/terminos-y-condiciones` y `/libro-de-reclamaciones`
+  creadas como contenido `texto_rico` del CMS, servidas por el catch-all (los
+  enlaces del footer ya no son muertos; también ejercita páginas secundarias).
+- **Ajuste móvil**: el slogan del topbar se oculta en pantallas chicas para no
+  desbordar; el footer colapsa a 1–2 columnas; el menú de secciones permite el
+  acceso a portales en móvil sin menú hamburguesa (decisión validada).
+
+Verificado el 17/07/2026 en render en vivo: resaltado amarillo del hero,
+footer con las 4 columnas y enlaces, y las dos páginas legales respondiendo
+200 por el catch-all (slug inexistente → 404).
+
+## 5. Pendientes conocidos
 
 - **Imágenes/logos reales** aún no cargados: ofertas, noticias y concesionarios
   usan placeholders/iniciales hasta subir archivos a `media/`.
-- **Footer**: sigue en su versión mínima; la maqueta tiene un pie de 4 columnas
-  (Explorar / Portales / Contacto + legal) con enlaces que son data de la
-  instancia (redes, libro de reclamaciones, términos). Pendiente de definir si
-  se vuelven contenido del CMS o configuración.
-- El hero no resalta en amarillo parte del título (la maqueta pinta "ahora en
-  línea"): requeriría estructurar el título en el contenido; hoy es un texto
-  plano.
-- Falta contenido en secciones vacías de portales (`/cliente`, `/proveedor`,
+- **Textos legales definitivos**: las páginas de términos y reclamaciones
+  tienen contenido preliminar; el texto real lo cargará la administración
+  desde el CMS.
+- Falta contenido en las rutas de portales (`/cliente`, `/proveedor`,
   `/login`): son rutas de sistema de pasos posteriores del roadmap.

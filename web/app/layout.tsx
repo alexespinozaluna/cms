@@ -39,7 +39,7 @@ export default async function RootLayout({
       <body className="flex min-h-full flex-col">
         <Header menu={menu} />
         <main className="flex-1">{children}</main>
-        <Footer />
+        <Footer menu={menu} />
       </body>
     </html>
   );

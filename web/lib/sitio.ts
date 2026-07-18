@@ -11,4 +11,6 @@ export const sitio = {
   slogan: process.env.NEXT_PUBLIC_SITE_SLOGAN ?? "",
   /** Descripción para SEO. */
   descripcion: process.env.NEXT_PUBLIC_SITE_DESCRIPTION ?? "",
+  /** URL de Facebook de la instancia (opcional; el footer solo lo muestra si existe). */
+  facebook: process.env.NEXT_PUBLIC_SITE_FACEBOOK ?? "",
 };

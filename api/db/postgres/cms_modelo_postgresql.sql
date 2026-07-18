@@ -20,6 +20,8 @@
 --   17/07/2026  Alex Espinoza  Se generaliza la descripción: el CMS es un
 --                              producto genérico para retail; la marca de la
 --                              instancia vive en configuración, no en código
+--   17/07/2026  Alex Espinoza  hero_cartel: nuevo campo 'titulo_resaltado'
+--                              (fragmento del título a resaltar en el hero)
 -- ============================================================================
 
 BEGIN;
@@ -180,6 +182,7 @@ INSERT INTO tipos_bloque (codigo, nombre, esquema_campos) VALUES
 ('hero_cartel', 'Hero con cartel de oferta', '[
   {"nombre":"kicker","tipo":"texto","etiqueta":"Etiqueta superior","requerido":false},
   {"nombre":"titulo","tipo":"texto","etiqueta":"Título","requerido":true},
+  {"nombre":"titulo_resaltado","tipo":"texto","etiqueta":"Fragmento del título a resaltar","requerido":false},
   {"nombre":"subtitulo","tipo":"textolargo","etiqueta":"Subtítulo","requerido":false},
   {"nombre":"origen","tipo":"opcion","etiqueta":"Origen de la oferta","requerido":true,"opciones":["manual","erp"]},
   {"nombre":"codigo_producto","tipo":"texto","etiqueta":"Código de producto (ERP)","requerido":false},

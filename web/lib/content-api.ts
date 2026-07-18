@@ -29,6 +29,8 @@ export interface OfertaItem {
 export interface HeroCartelContenido {
   kicker?: string;
   titulo: string;
+  /** Fragmento del título a resaltar en amarillo (opcional; debe estar en `titulo`). */
+  titulo_resaltado?: string;
   subtitulo?: string;
   origen: "manual" | "erp";
   codigo_producto?: string;

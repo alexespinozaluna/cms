@@ -43,7 +43,7 @@ export default function Header({ menu }: { menu: MenuItem[] }) {
       {/* Topbar: slogan institucional + accesos rápidos a los portales */}
       <div className="bg-verde text-[#DDE6D2]">
         <div className="mx-auto flex min-h-[34px] max-w-6xl items-center justify-between gap-4 px-5 text-xs">
-          <span>{sitio.slogan}</span>
+          <span className="hidden truncate sm:inline">{sitio.slogan}</span>
           <nav className="flex gap-4" aria-label="Accesos de portal">
             <Link href="/#portales" className="font-bold text-amarillo">
               Portal cliente
