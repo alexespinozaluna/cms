@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { GrillaNoticiasContenido } from "@/lib/content-api";
 import { formatearFecha } from "@/lib/formato";
+import { resolverMedia } from "@/lib/media";
 
 export default function GrillaNoticias({ contenido }: { contenido: GrillaNoticiasContenido }) {
   return (
@@ -12,7 +13,7 @@ export default function GrillaNoticias({ contenido }: { contenido: GrillaNoticia
             <article className="flex h-full flex-col border border-linea bg-white shadow-sm">
               {noticia.imagen ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={noticia.imagen} alt="" className="aspect-video w-full object-cover" />
+                <img src={resolverMedia(noticia.imagen)} alt="" className="aspect-video w-full object-cover" />
               ) : (
                 <div aria-hidden className="aspect-video w-full bg-verde/10" />
               )}

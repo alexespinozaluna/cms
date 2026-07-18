@@ -1,4 +1,5 @@
 import type { GrillaConcesionariosContenido } from "@/lib/content-api";
+import { resolverMedia } from "@/lib/media";
 
 export default function GrillaConcesionarios({
   contenido,
@@ -14,7 +15,7 @@ export default function GrillaConcesionarios({
             <li key={i} className="flex flex-col items-center gap-2 text-center">
               {c.logo ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={c.logo} alt={c.nombre} className="h-16 w-16 object-contain" />
+                <img src={resolverMedia(c.logo)} alt={c.nombre} className="h-16 w-16 object-contain" />
               ) : (
                 <span
                   aria-hidden

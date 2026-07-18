@@ -7,5 +7,9 @@
 # Configuración local con credenciales (usar la plantilla .example)
 api/src/Cms.Api/appsettings.Development.json
 
+# Imágenes subidas por la instancia (data, no código)
+api/src/Cms.Api/media/*
+!api/src/Cms.Api/media/.gitkeep
+
 # Logs y temporales
 *.log

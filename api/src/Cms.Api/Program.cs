@@ -1,4 +1,5 @@
 using Cms.Content;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,18 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("Frontend");
+
+// Imágenes/banners del CMS (fase 1): carpeta física servida en /media.
+// La ruta es configurable por instancia (Media:Ruta); relativa al content root.
+var rutaMedia = Path.GetFullPath(
+    app.Configuration["Media:Ruta"] ?? "media", app.Environment.ContentRootPath);
+Directory.CreateDirectory(rutaMedia);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(rutaMedia),
+    RequestPath = "/media"
+});
+
 app.MapControllers();
 
 // Sondeo de salud para IIS/ARR

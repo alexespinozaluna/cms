@@ -1,5 +1,6 @@
 import type { GrillaOfertasContenido, OfertaItem } from "@/lib/content-api";
 import { formatearPrecio } from "@/lib/formato";
+import { resolverMedia } from "@/lib/media";
 
 function TarjetaOferta({ item, origen }: { item: OfertaItem; origen: "manual" | "erp" }) {
   // En origen 'erp' el precio vendrá del ERP (fase posterior); no se muestra precio manual.
@@ -15,7 +16,7 @@ function TarjetaOferta({ item, origen }: { item: OfertaItem; origen: "manual" | 
       {item.imagen ? (
         /* Imágenes servidas por la API (fase 1: carpeta de archivos) */
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={item.imagen} alt={item.producto ?? ""} className="mb-3 aspect-square w-full object-cover" />
+        <img src={resolverMedia(item.imagen)} alt={item.producto ?? ""} className="mb-3 aspect-square w-full object-cover" />
       ) : (
         <div aria-hidden className="mb-3 aspect-square w-full bg-papel" />
       )}
