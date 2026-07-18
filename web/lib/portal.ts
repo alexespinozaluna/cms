@@ -1,57 +1,56 @@
 /**
- * Opciones del portal por rol (v1). Los roles vienen del ERP (Anexo) y se
- * combinan. `disponible:false` = se muestra como "Próximamente" hasta que
- * exista el SP del ERP que alimente la vista. Ajustar libremente esta config.
+ * Opciones del portal por rol. Cada opción la ven uno o más roles del ERP; el
+ * usuario ve la UNIÓN de las opciones de sus roles. `disponible:false` se muestra
+ * como "Próximamente" hasta que exista el SP/endpoint que alimente la vista.
  */
 export interface OpcionPortal {
+  clave: string; // slug para la futura ruta (/portal/<clave>)
   titulo: string;
   descripcion: string;
-  href?: string;
+  roles: string[]; // roles que pueden verla
+  href?: string; // definido cuando la vista exista
   disponible: boolean;
 }
 
-export interface SeccionRol {
-  etiqueta: string;
-  opciones: OpcionPortal[];
-}
+export const opcionesPortal: OpcionPortal[] = [
+  {
+    clave: "estado-cuenta",
+    titulo: "Estado de cuenta",
+    descripcion: "Tus movimientos y saldo en el bazar.",
+    roles: ["Cliente"],
+    disponible: false,
+  },
+  {
+    clave: "mis-compras",
+    titulo: "Mis compras",
+    descripcion: "Historial de tus compras y comprobantes.",
+    roles: ["Cliente", "Proveedor", "Trabajador"],
+    disponible: false,
+  },
+  {
+    clave: "mis-facturas",
+    titulo: "Mis facturas",
+    descripcion: "Estado de tus facturas presentadas.",
+    roles: ["Proveedor"],
+    disponible: false,
+  },
+  {
+    clave: "boleta-pago",
+    titulo: "Boleta de pago",
+    descripcion: "Tus boletas y descuentos de planilla.",
+    roles: ["Trabajador"],
+    disponible: false,
+  },
+  {
+    clave: "liquidacion-pagos",
+    titulo: "Liquidación de pagos",
+    descripcion: "Detalle y calendario de tus pagos.",
+    roles: ["Concesionario"],
+    disponible: false,
+  },
+];
 
-export const seccionesPorRol: Record<string, SeccionRol> = {
-  Cliente: {
-    etiqueta: "Cliente",
-    opciones: [
-      { titulo: "Estado de cuenta", descripcion: "Tus movimientos y saldo en el bazar.", disponible: false },
-      { titulo: "Historial de compras", descripcion: "Tus compras y comprobantes.", disponible: false },
-      { titulo: "Cuotas y descuentos", descripcion: "Próximos descuentos por planilla.", disponible: false },
-    ],
-  },
-  Proveedor: {
-    etiqueta: "Proveedor",
-    opciones: [
-      { titulo: "Estado de facturas", descripcion: "Situación de tus facturas presentadas.", disponible: false },
-      { titulo: "Calendario de pagos", descripcion: "Detalle y fechas de pago.", disponible: false },
-      { titulo: "Constancias y comprobantes", descripcion: "Documentos para descarga.", disponible: false },
-    ],
-  },
-  Concesionario: {
-    etiqueta: "Concesionario",
-    opciones: [
-      { titulo: "Mi concesión", descripcion: "Datos de tu concesión y contrato.", disponible: false },
-      { titulo: "Pagos y obligaciones", descripcion: "Estado de pagos y vencimientos.", disponible: false },
-    ],
-  },
-  Trabajador: {
-    etiqueta: "Trabajador",
-    opciones: [
-      { titulo: "Mis boletas", descripcion: "Boletas y descuentos de planilla.", disponible: false },
-      { titulo: "Beneficios del personal", descripcion: "Beneficios y campañas para el personal.", disponible: false },
-    ],
-  },
-};
-
-/** Secciones a mostrar para un conjunto de roles, en orden fijo. */
-export function seccionesDeRoles(roles: string[]): Array<{ rol: string } & SeccionRol> {
-  const orden = ["Cliente", "Proveedor", "Concesionario", "Trabajador"];
-  return orden
-    .filter((rol) => roles.includes(rol) && seccionesPorRol[rol])
-    .map((rol) => ({ rol, ...seccionesPorRol[rol] }));
+/** Opciones visibles para un conjunto de roles (unión, sin duplicar). */
+export function opcionesParaRoles(roles: string[]): OpcionPortal[] {
+  return opcionesPortal.filter((o) => o.roles.some((r) => roles.includes(r)));
 }

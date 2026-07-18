@@ -117,6 +117,24 @@ Reglas duras:
   requiere servicio de correo).
 - `SistemaUsuario` (login del ERP de escritorio) NO se usa ni se toca.
 
+### Opciones del portal por rol (matriz)
+Tras el login, `/portal` muestra la **unión** de las opciones de los roles del
+usuario. Cada endpoint/vista se protege con `[Authorize(Roles=...)]` según esta
+matriz (fuente: `web/lib/portal.ts`):
+
+| Opción | Roles que la ven |
+|---|---|
+| Estado de cuenta | Cliente |
+| Mis compras | Cliente, Proveedor, Trabajador |
+| Mis facturas | Proveedor |
+| Boleta de pago | Trabajador |
+| Liquidación de pagos | Concesionario |
+
+Los datos de cada opción salen de **SPs de solo lectura del ERP** (en
+`api/db/mssql/`, los ejecuta el usuario), consumidos por endpoints protegidos
+que toman el `IdUserRef` del token (nunca del cliente). Listas transaccionales
+con **TanStack Table**.
+
 ### Contenido: estado y vigencia (requerido)
 - Toda página y bloque tiene `estado` (`borrador|publicado|archivado`) y
   `vigencia_desde` / `vigencia_hasta` (nullable).
