@@ -5,13 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  registroClienteSchema,
-  type RegistroClienteInput,
-  registrarCliente,
-  guardarSesion,
-  AuthError,
-} from "@/lib/auth";
+import { registroSchema, type RegistroInput, registrar, guardarSesion, AuthError } from "@/lib/auth";
 import AuthShell from "@/app/components/auth/AuthShell";
 import CampoTexto from "@/app/components/auth/CampoTexto";
 
@@ -22,12 +16,12 @@ export default function RegistroPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<RegistroClienteInput>({ resolver: zodResolver(registroClienteSchema) });
+  } = useForm<RegistroInput>({ resolver: zodResolver(registroSchema) });
 
-  async function onSubmit(data: RegistroClienteInput) {
+  async function onSubmit(data: RegistroInput) {
     setErrorGeneral(null);
     try {
-      guardarSesion(await registrarCliente(data));
+      guardarSesion(await registrar(data));
       router.push("/");
       router.refresh();
     } catch (e) {
@@ -37,19 +31,19 @@ export default function RegistroPage() {
 
   return (
     <AuthShell
-      titulo="Crear cuenta de cliente"
-      subtitulo="Solo el personal militar registrado en el bazar puede crear una cuenta. Verificamos tu CIP/DNI."
+      titulo="Crear cuenta"
+      subtitulo="Solo el personal registrado en el bazar (cliente, proveedor, concesionario o trabajador) puede crear una cuenta. Verificamos tu CIP/DNI."
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {errorGeneral && (
           <p className="rounded-md bg-rojo/10 px-3 py-2 text-sm text-rojo">{errorGeneral}</p>
         )}
         <CampoTexto
-          id="cipDni"
+          id="documento"
           inputMode="numeric"
           etiqueta="CIP o DNI"
-          error={errors.cipDni?.message}
-          {...register("cipDni")}
+          error={errors.documento?.message}
+          {...register("documento")}
         />
         <CampoTexto
           id="nombreCompleto"
@@ -58,12 +52,20 @@ export default function RegistroPage() {
           {...register("nombreCompleto")}
         />
         <CampoTexto
-          id="email"
+          id="correo"
           type="email"
           autoComplete="email"
           etiqueta="Correo"
-          error={errors.email?.message}
-          {...register("email")}
+          error={errors.correo?.message}
+          {...register("correo")}
+        />
+        <CampoTexto
+          id="telefono"
+          inputMode="tel"
+          autoComplete="tel"
+          etiqueta="Teléfono (opcional)"
+          error={errors.telefono?.message}
+          {...register("telefono")}
         />
         <CampoTexto
           id="password"

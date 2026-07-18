@@ -12,7 +12,7 @@ builder.Services.AddDominioContenido(cadenaCms);
 
 // Identidad (EF Core + Identity, esquema auth) y acceso al ERP (validación CIP/DNI)
 builder.Services.AddDominioAuth(cadenaCms, builder.Configuration);
-builder.Services.AddDominioErp();
+builder.Services.AddDominioErp(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

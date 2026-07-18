@@ -3,18 +3,20 @@ using Microsoft.AspNetCore.Identity;
 namespace Cms.Auth.Modelo;
 
 /// <summary>
-/// Usuario de Identity extendido con el vínculo al ERP (cliente) o al proveedor.
+/// Cuenta web del portal (concepto "AnexoWeb") en PostgreSQL, vinculada a la
+/// persona del ERP por <see cref="IdAnexo"/>. Las credenciales viven aquí; los
+/// roles se derivan de los flags del ERP en cada login. El login es por CIP/DNI.
 /// </summary>
 public sealed class Usuario : IdentityUser
 {
-    /// <summary>Código de cliente en el ERP (rol Cliente); null para otros roles.</summary>
-    public string? CodigoClienteErp { get; set; }
+    /// <summary>Vínculo a Anexo (ERP). Fuente de verdad de la identidad.</summary>
+    public int IdAnexo { get; set; }
 
-    /// <summary>Código de proveedor (rol Proveedor); null para otros roles.</summary>
-    public string? CodigoProveedor { get; set; }
-
+    public string? Cip { get; set; }
+    public string? NroDni { get; set; }
+    public string? Telefono { get; set; }
     public string? NombreCompleto { get; set; }
 
-    /// <summary>True para proveedores con contraseña temporal (cambio obligatorio al primer login).</summary>
+    /// <summary>True para cuentas con contraseña temporal (cambio obligatorio al primer login).</summary>
     public bool CambioPasswordPendiente { get; set; }
 }

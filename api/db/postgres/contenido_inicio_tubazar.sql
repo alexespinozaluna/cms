@@ -24,6 +24,8 @@
 --   17/07/2026  Alex Espinoza  Datos reales de tiendas (8) y concesionarios
 --                              (selección por rubro) desde los Excel de la
 --                              instancia (docs/Tiendas, docs/Concesionario).
+--   18/07/2026  Alex Espinoza  Login único: los CTA de la banda de portales
+--                              apuntan a /login (un solo acceso).
 --
 -- Nota de control   : el script es idempotente — puede re-ejecutarse: hace
 --                     upsert de la página, borra y re-inserta sus bloques y
@@ -216,7 +218,7 @@ FROM (VALUES
           { "texto": "Historial de compras" },
           { "texto": "Cuotas y fechas de descuento" }
         ],
-        "url": "/cliente",
+        "url": "/login",
         "texto_boton": "Ingresar a mi cuenta"
       },
       {
@@ -227,7 +229,7 @@ FROM (VALUES
           { "texto": "Detalle y calendario de pagos" },
           { "texto": "Constancias y comprobantes" }
         ],
-        "url": "/proveedor",
+        "url": "/login",
         "texto_boton": "Ingresar como proveedor"
       }
     ]

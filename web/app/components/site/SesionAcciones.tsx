@@ -22,7 +22,9 @@ export default function SesionAcciones() {
   if (sesion) {
     return (
       <div className="flex items-center gap-3">
-        <span className="hidden text-sm font-semibold text-verde-osc md:inline">{sesion.email}</span>
+        <span className="hidden text-sm font-semibold text-verde-osc md:inline">
+          {sesion.nombre || sesion.usuario}
+        </span>
         <button
           type="button"
           onClick={() => {

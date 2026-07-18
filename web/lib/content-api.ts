@@ -115,15 +115,22 @@ export interface PaginaDetalle {
 
 // ---------- Fetchers ----------
 
-/** Página publicada y vigente por slug; null si no existe (→ notFound). */
+/**
+ * Página publicada y vigente por slug; null si no existe (→ notFound).
+ * Resiliente: si la Content API no responde (p. ej. durante el build o una
+ * caída puntual) devuelve null y la página cae a su fallback en vez de romper.
+ */
 export async function obtenerPagina(slug: string): Promise<PaginaDetalle | null> {
-  const res = await fetch(
-    `${API_URL}/api/contenido/paginas/${encodeURIComponent(slug)}`,
-    { next: { revalidate: REVALIDATE_SEGUNDOS } },
-  );
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`Content API respondió ${res.status} para slug "${slug}"`);
-  return res.json();
+  try {
+    const res = await fetch(
+      `${API_URL}/api/contenido/paginas/${encodeURIComponent(slug)}`,
+      { next: { revalidate: REVALIDATE_SEGUNDOS } },
+    );
+    if (!res.ok) return null; // 404 u otro estado: se trata como "no disponible"
+    return res.json();
+  } catch {
+    return null;
+  }
 }
 
 /** Árbol de menú público; nunca rompe el layout: ante error devuelve vacío. */

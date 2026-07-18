@@ -11,25 +11,29 @@ const password = z
   .regex(/[A-Z]/, "Debe incluir una mayúscula.")
   .regex(/\d/, "Debe incluir un número.");
 
-export const registroClienteSchema = z.object({
-  cipDni: z.string().regex(/^\d{8,9}$/, "El CIP/DNI debe tener 8 o 9 dígitos."),
-  email: z.string().email("Correo inválido."),
+const documento = z.string().regex(/^\d{8,9}$/, "El CIP/DNI debe tener 8 o 9 dígitos.");
+
+export const registroSchema = z.object({
+  documento,
+  correo: z.string().email("Correo inválido."),
+  telefono: z.string().max(20).optional().or(z.literal("")),
   password,
   nombreCompleto: z.string().max(150).optional().or(z.literal("")),
 });
 
 export const loginSchema = z.object({
-  email: z.string().email("Correo inválido."),
+  usuario: documento,
   password: z.string().min(1, "Ingresa tu contraseña."),
 });
 
-export type RegistroClienteInput = z.infer<typeof registroClienteSchema>;
+export type RegistroInput = z.infer<typeof registroSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 
 export interface Sesion {
   token: string;
   expira: string;
-  email: string;
+  usuario: string;
+  nombre: string;
   roles: string[];
 }
 
@@ -62,8 +66,8 @@ async function postAuth(path: string, body: unknown): Promise<Sesion> {
   return data as Sesion;
 }
 
-export function registrarCliente(input: RegistroClienteInput) {
-  return postAuth("registro-cliente", input);
+export function registrar(input: RegistroInput) {
+  return postAuth("registro", input);
 }
 
 export function login(input: LoginInput) {

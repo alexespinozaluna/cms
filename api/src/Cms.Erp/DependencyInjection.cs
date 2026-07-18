@@ -1,4 +1,5 @@
-using Cms.Erp.Clientes;
+using Cms.Erp.Personas;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Cms.Erp;
@@ -6,12 +7,16 @@ namespace Cms.Erp;
 public static class DependencyInjection
 {
     /// <summary>
-    /// Registra el acceso al ERP. Hoy usa el stub en memoria; cuando exista el
-    /// SP real, aquí se cambia por la implementación Dapper/SqlClient.
+    /// Registra el acceso al ERP. Usa la implementación real (SQL Server) si existe
+    /// la cadena de conexión 'ErpDb'; en caso contrario, el stub de desarrollo.
     /// </summary>
-    public static IServiceCollection AddDominioErp(this IServiceCollection services)
+    public static IServiceCollection AddDominioErp(this IServiceCollection services, IConfiguration config)
     {
-        services.AddScoped<IValidadorClientesErp, ValidadorClientesErpStub>();
+        var cadena = config.GetConnectionString("ErpDb");
+        if (!string.IsNullOrWhiteSpace(cadena))
+            services.AddScoped<IConsultaPersonasErp>(_ => new ConsultaPersonasErpSql(cadena));
+        else
+            services.AddScoped<IConsultaPersonasErp, ConsultaPersonasErpStub>();
         return services;
     }
 }

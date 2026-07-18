@@ -82,13 +82,24 @@ Reglas duras:
 - Transición: el bloque acepta `origen: "manual" | "erp"`; en manual el editor
   ingresa precio (comportamiento actual), en erp se resuelve contra la API.
 
-### Registro y cuentas
-- **Cliente**: solo puede registrarse si su CIP/DNI existe en el ERP.
-  Flujo: form → API valida contra SP del ERP → si existe, crea usuario en
-  Identity vinculado al código de cliente del ERP.
-- **Proveedor**: cuentas creadas por un Admin desde el panel; se envía
-  usuario + contraseña temporal por correo; cambio obligatorio al primer login.
-- Recuperar contraseña: tokens de Identity + enlace por correo.
+### Registro y cuentas (login único — decisión 18/07/2026)
+- **Un solo login** para todos los tipos. La persona debe existir en la tabla
+  `Anexo` del ERP y estar activa (`EsDesactivado=0`) con al menos un flag de
+  rol. Los roles salen de esos flags y **se combinan**: `EsCliente`,
+  `EsProveedor`, `EsConcesionario`, `EsTrabajador` (este último solo si además
+  `EsDomiciliado=1`). Las opciones del usuario logueado se arman según sus roles.
+- **Credenciales en PostgreSQL** (concepto "AnexoWeb" = usuario de Identity
+  extendido: usuario=CIP/DNI, correo, teléfono, contraseña hasheada, `IdAnexo`).
+  El ERP NO se escribe: se consulta solo lectura (SP/vista sobre `Anexo`, por
+  `CodAnexo` o `Documento`) para validar existencia y traer flags.
+- **Registro**: form → API valida contra el ERP → si existe con algún rol, crea
+  la cuenta web y asigna los roles derivados.
+- **Login**: usuario (CIP/DNI) + contraseña → valida la contraseña en Postgres
+  y **relee los flags del ERP en vivo** para sincronizar roles (quien pasa a
+  tener otro rol lo gana sin re-registrarse).
+- Recuperar contraseña: tokens de Identity + enlace por correo (pendiente,
+  requiere servicio de correo).
+- `SistemaUsuario` (login del ERP de escritorio) NO se usa ni se toca.
 
 ### Contenido: estado y vigencia (requerido)
 - Toda página y bloque tiene `estado` (`borrador|publicado|archivado`) y

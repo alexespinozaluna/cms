@@ -23,13 +23,14 @@ public sealed class GeneradorJwt(IOptions<JwtOptions> opciones) : IGeneradorJwt
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, usuario.Id),
+            new(JwtRegisteredClaimNames.UniqueName, usuario.UserName ?? ""),
             new(JwtRegisteredClaimNames.Email, usuario.Email ?? ""),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
-        if (!string.IsNullOrEmpty(usuario.CodigoClienteErp))
-            claims.Add(new Claim("codigo_cliente_erp", usuario.CodigoClienteErp));
-        if (!string.IsNullOrEmpty(usuario.CodigoProveedor))
-            claims.Add(new Claim("codigo_proveedor", usuario.CodigoProveedor));
+        if (usuario.IdAnexo > 0)
+            claims.Add(new Claim("id_anexo", usuario.IdAnexo.ToString()));
+        if (!string.IsNullOrEmpty(usuario.Cip))
+            claims.Add(new Claim("cip", usuario.Cip));
         claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
         var credenciales = new SigningCredentials(
