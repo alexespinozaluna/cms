@@ -32,10 +32,19 @@ async function getAuth<T>(path: string): Promise<T> {
   return res.json();
 }
 
-export function obtenerMisCompras(desde?: string, hasta?: string): Promise<Movimiento[]> {
+function conRango(path: string, desde?: string, hasta?: string): Promise<Movimiento[]> {
   const q = new URLSearchParams();
   if (desde) q.set("desde", desde);
   if (hasta) q.set("hasta", hasta);
   const qs = q.toString();
-  return getAuth<Movimiento[]>(`mis-compras${qs ? `?${qs}` : ""}`);
+  return getAuth<Movimiento[]>(`${path}${qs ? `?${qs}` : ""}`);
 }
+
+export const obtenerMisCompras = (desde?: string, hasta?: string) =>
+  conRango("mis-compras", desde, hasta);
+
+export const obtenerEstadoCuenta = (desde?: string, hasta?: string) =>
+  conRango("estado-cuenta", desde, hasta);
+
+export const obtenerLiquidacionPagos = (desde?: string, hasta?: string) =>
+  conRango("liquidacion-pagos", desde, hasta);

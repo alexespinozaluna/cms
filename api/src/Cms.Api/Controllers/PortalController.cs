@@ -20,14 +20,34 @@ public sealed class PortalController(IConsultaDocumentosErp documentos) : Contro
     [HttpGet("mis-compras")]
     [Authorize(Roles = Roles.Ven.MisCompras)]
     [ProducesResponseType(typeof(IReadOnlyList<MovimientoErp>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> MisCompras(DateTime? desde, DateTime? hasta, CancellationToken ct)
+    public Task<IActionResult> MisCompras(DateTime? desde, DateTime? hasta, CancellationToken ct)
+        => Movimientos(documentos.MisComprasAsync, desde, hasta, ct);
+
+    /// <summary>Estado de cuenta (Cliente).</summary>
+    [HttpGet("estado-cuenta")]
+    [Authorize(Roles = Roles.Ven.EstadoCuenta)]
+    [ProducesResponseType(typeof(IReadOnlyList<MovimientoErp>), StatusCodes.Status200OK)]
+    public Task<IActionResult> EstadoCuenta(DateTime? desde, DateTime? hasta, CancellationToken ct)
+        => Movimientos(documentos.EstadoCuentaAsync, desde, hasta, ct);
+
+    /// <summary>Liquidación de pagos (Concesionario).</summary>
+    [HttpGet("liquidacion-pagos")]
+    [Authorize(Roles = Roles.Ven.LiquidacionPagos)]
+    [ProducesResponseType(typeof(IReadOnlyList<MovimientoErp>), StatusCodes.Status200OK)]
+    public Task<IActionResult> LiquidacionPagos(DateTime? desde, DateTime? hasta, CancellationToken ct)
+        => Movimientos(documentos.LiquidacionPagosAsync, desde, hasta, ct);
+
+    // Patrón común (DRY): toma el IdAnexo del token, normaliza el rango y consulta.
+    private async Task<IActionResult> Movimientos(
+        Func<int, DateTime, DateTime, CancellationToken, Task<IReadOnlyList<MovimientoErp>>> consulta,
+        DateTime? desde, DateTime? hasta, CancellationToken ct)
     {
         if (!TryIdAnexo(out var idAnexo))
             return Forbid();
 
         var fin = (hasta ?? DateTime.Today).Date;
         var ini = (desde ?? fin.AddMonths(-2)).Date;
-        var filas = await documentos.MisComprasAsync(idAnexo, ini, fin.AddDays(1).AddSeconds(-1), ct);
+        var filas = await consulta(idAnexo, ini, fin.AddDays(1).AddSeconds(-1), ct);
         return Ok(filas);
     }
 

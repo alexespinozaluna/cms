@@ -18,7 +18,8 @@ export const opcionesPortal: OpcionPortal[] = [
     titulo: "Estado de cuenta",
     descripcion: "Tus movimientos y saldo en el bazar.",
     roles: ["Cliente"],
-    disponible: false,
+    href: "/portal/estado-cuenta",
+    disponible: true,
   },
   {
     clave: "mis-compras",
@@ -47,7 +48,8 @@ export const opcionesPortal: OpcionPortal[] = [
     titulo: "Liquidación de pagos",
     descripcion: "Detalle y calendario de tus pagos.",
     roles: ["Concesionario"],
-    disponible: false,
+    href: "/portal/liquidacion-pagos",
+    disponible: true,
   },
 ];
 
