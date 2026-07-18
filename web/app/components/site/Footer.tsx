@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { MenuItem } from "@/lib/content-api";
 import { sitio } from "@/lib/sitio";
-import Marca from "./Marca";
+import Logo from "./Logo";
 
 /** Pie de página de 4 columnas (marca, explorar, portales, contacto) + barra legal. */
 export default function Footer({ menu }: { menu: MenuItem[] }) {
@@ -13,7 +13,7 @@ export default function Footer({ menu }: { menu: MenuItem[] }) {
         {/* Marca + descripción */}
         <div>
           <p className="display text-2xl text-white">
-            <Marca claseAcento="text-amarillo" />
+            <Logo variante="blanco" claseAcento="text-amarillo" className="h-8 w-auto" />
           </p>
           {(sitio.descripcion || sitio.slogan) && (
             <p className="mt-3 max-w-[34ch] text-sm">{sitio.descripcion || sitio.slogan}</p>

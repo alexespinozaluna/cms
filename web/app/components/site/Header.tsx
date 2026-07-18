@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { MenuItem } from "@/lib/content-api";
 import { sitio } from "@/lib/sitio";
-import Marca from "./Marca";
+import Logo from "./Logo";
 
 function ItemNav({ item }: { item: MenuItem }) {
   if (item.hijos.length === 0) {
@@ -59,7 +59,7 @@ export default function Header({ menu }: { menu: MenuItem[] }) {
       <div className="border-b border-linea">
         <div className="mx-auto flex min-h-[72px] max-w-6xl items-center gap-6 px-5">
           <Link href="/" aria-label={`${sitio.nombre} — inicio`} className="display text-2xl text-rojo">
-            <Marca claseAcento="text-dorado" />
+            <Logo variante="color" claseAcento="text-dorado" className="h-9 w-auto" />
           </Link>
           <nav className="flex flex-1 flex-wrap items-center gap-1" aria-label="Menú principal">
             {menu.map((item) => (

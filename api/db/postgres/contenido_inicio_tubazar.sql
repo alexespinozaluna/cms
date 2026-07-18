@@ -21,6 +21,9 @@
 --   17/07/2026  Alex Espinoza  Hero con 'titulo_resaltado'; se agrega ese campo
 --                              al esquema de hero_cartel; páginas legales
 --                              (términos, libro de reclamaciones) para el footer.
+--   17/07/2026  Alex Espinoza  Datos reales de tiendas (8) y concesionarios
+--                              (selección por rubro) desde los Excel de la
+--                              instancia (docs/Tiendas, docs/Concesionario).
 --
 -- Nota de control   : el script es idempotente — puede re-ejecutarse: hace
 --                     upsert de la página, borra y re-inserta sus bloques y
@@ -91,25 +94,98 @@ FROM (VALUES
   -- TIENDAS
   ('lista_tiendas', 3, $j$
   {
-    "titulo": "Tiendas en los centros del Ejército",
-    "items": [
-      { "nombre": "Bazar Cuartel General", "ubicacion": "Cuartel General del Ejército, San Borja",           "horario": "Lun–Sáb 9:00–20:00", "telefono": "(01) 555-0110" },
-      { "nombre": "Bazar Chorrillos",      "ubicacion": "Escuela Militar de Chorrillos",                     "horario": "Lun–Sáb 9:00–19:30", "telefono": "(01) 555-0120" },
-      { "nombre": "Bazar Rímac",           "ubicacion": "Fuerte General de División Rafael Hoyos Rubio",     "horario": "Lun–Vie 9:00–19:00", "telefono": "(01) 555-0130" }
-    ]
+      "titulo": "Tiendas en los centros del Ejército",
+      "items": [
+          {
+              "nombre": "Tienda N° 01",
+              "ubicacion": "Av. Escuela Militar S/N Villa Militar Oeste (Villa Militar) Lima Lima Chorrillos",
+              "horario": "Lun - Dom: 07:00 am a 22:00 pm",
+              "telefono": "644-9284 Anexo 301"
+          },
+          {
+              "nombre": "Tienda N° 02",
+              "ubicacion": "Av. Prolg. Paseo La Republica S/N Villa Militar Matellini (Alt.De Metro) Lima Lima Chorrillos",
+              "horario": "Lun - Dom: 07:00 am a 22:00 pm",
+              "telefono": "644-9284 Anexo 302"
+          },
+          {
+              "nombre": "Tienda N° 03",
+              "ubicacion": "Av. Escuela Militar S/N Villa Militar Este (Villa Militar) Lima Lima Chorrillos",
+              "horario": "Lun - Dom: 07:00 am a 22:00 pm",
+              "telefono": "644-9284 Anexo 303"
+          },
+          {
+              "nombre": "Tienda N° 04",
+              "ubicacion": "Cal. Escuela Militar 222 (Espalda Del Caem) Lima Lima Chorrillos",
+              "horario": "Lun - Sab: 07:00 am a 22:00 pm",
+              "telefono": "644-9284 Anexo 304"
+          },
+          {
+              "nombre": "Tienda N° 06",
+              "ubicacion": "Jr. General Recavarren Nº 1300 Tda 2 Urb. Limatambo - Surquillo",
+              "horario": "Lun - Dom: 07:00 am a 21:00 pm",
+              "telefono": "644-9284 Anexo 306"
+          },
+          {
+              "nombre": "Tienda N° 07",
+              "ubicacion": "Av. Chorrillos Cuadra 2 Nro. S/N (Costado De La Clinica Maison De Sante)",
+              "horario": "Lun - Dom: 07:00 am a 22:00 pm",
+              "telefono": "644-9284 Anexo 307"
+          },
+          {
+              "nombre": "Tienda N° 08",
+              "ubicacion": "Av. Boulevar S/N Cuartel General (Cuartel General Del Ejercito) Lima Lima San Borja",
+              "horario": "Lun - Dom: 07:00 am a 21:00 pm",
+              "telefono": "644-9284 Anexo 300"
+          },
+          {
+              "nombre": "Tienda N° 10",
+              "ubicacion": "Av. Tupac Amaru S/N Entrada Al Cuartel Hoyos Rubio - Rimac",
+              "horario": "Lun - Dom: 07:00 am a 21:00 pm",
+              "telefono": "644-9284 Anexo 309"
+          }
+      ]
   }
   $j$::jsonb),
 
-  -- CONCESIONARIOS (logos pendientes: llegarán con el manejo de imágenes)
+  -- CONCESIONARIOS (datos reales; sin logo se muestran iniciales de respaldo)
   ('grilla_concesionarios', 4, $j$
   {
-    "titulo": "Concesionarios",
-    "items": [
-      { "nombre": "Electro Fácil", "rubro": "Electrodomésticos y tecnología" },
-      { "nombre": "Farmacia Mía",  "rubro": "Salud y cuidado personal" },
-      { "nombre": "Café del Patio","rubro": "Cafetería y pastelería" },
-      { "nombre": "Óptica Visión", "rubro": "Lentes y exámenes visuales" }
-    ]
+      "titulo": "Concesionarios",
+      "items": [
+          {
+              "nombre": "Soto Brito, Erick Ferrer",
+              "rubro": "Abarrotes"
+          },
+          {
+              "nombre": "Armeria Charles X Tactical",
+              "rubro": "Armas Y Accesorios"
+          },
+          {
+              "nombre": "Advanced Net S.A.C.",
+              "rubro": "Artefactos"
+          },
+          {
+              "nombre": "B.Hogar Center S.A.C.",
+              "rubro": "Articulos Para El Hogar"
+          },
+          {
+              "nombre": "Bm Eventos Productora Eirl",
+              "rubro": "Articulos Para Eventos Especiales"
+          },
+          {
+              "nombre": "Bobadilla Chumacero, Mariza Angelica",
+              "rubro": "Belleza Y Cuidado Personal"
+          },
+          {
+              "nombre": "Nacarino Mendez, Susan Veronica",
+              "rubro": "Boutique"
+          },
+          {
+              "nombre": "Vallas Y Gigantografias De Peru S.A",
+              "rubro": "Comunicaciones"
+          }
+      ]
   }
   $j$::jsonb),
 

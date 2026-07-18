@@ -106,12 +106,35 @@ Verificado el 17/07/2026 en render en vivo: resaltado amarillo del hero,
 footer con las 4 columnas y enlaces, y las dos páginas legales respondiendo
 200 por el catch-all (slug inexistente → 404).
 
-## 5. Pendientes conocidos
+## 5. Datos e imágenes reales (17/07/2026)
 
-- **Imágenes/logos reales** aún no cargados: ofertas, noticias y concesionarios
-  usan placeholders/iniciales hasta subir archivos a `media/`.
-- **Textos legales definitivos**: las páginas de términos y reclamaciones
-  tienen contenido preliminar; el texto real lo cargará la administración
-  desde el CMS.
-- Falta contenido en las rutas de portales (`/cliente`, `/proveedor`,
-  `/login`): son rutas de sistema de pasos posteriores del roadmap.
+A partir de los materiales de la instancia (`docs/Tiendas`, `docs/Concesionario`,
+`docs/images`):
+
+- **Logo real**: se usa `tubazar-logo.png` (fondo claro, header) y
+  `tubazar-logo-blanco.png` (fondo oscuro, footer). Se sirven desde
+  `api/.../media/branding/` y se referencian por configuración
+  (`NEXT_PUBLIC_SITE_LOGO`, `NEXT_PUBLIC_SITE_LOGO_BLANCO`). El componente
+  `Logo` usa la imagen si está configurada, o cae al wordmark de texto
+  (`Marca`) — la marca sigue siendo config, no código.
+- **Tiendas**: 8 tiendas reales (dirección, horario y teléfono) extraídas de
+  `docs/Tiendas/Tiendas.xlsx` con `openpyxl`.
+- **Concesionarios**: selección por rubro (8 de 29) desde
+  `docs/Concesionario/Cincesionario.xlsx`; sin logo, se muestran iniciales.
+
+Nota: los logos viven en `media/` (gitignored, data de instancia), por lo que
+un clon nuevo debe proveer los suyos; el CMS cae al wordmark de texto si no hay.
+
+## 6. Pendientes conocidos
+
+- **Ofertas con productos/precios reales**: `docs/Ofertas/Ofertas.xlsx` solo
+  trae texto promocional; los productos con precio están en el PDF del catálogo
+  (`CatalogoTuBazar.pdf`), no estructurados. La grilla de ofertas y el hero
+  siguen con datos de muestra hasta tener esa data (o vía ERP, pasos 3-4).
+- **Imágenes de productos/noticias**: las de `docs/images` (chefs, menu-item,
+  slide, tab-item…) son de una plantilla ajena, no de TuBazar; no se usan para
+  no mostrar contenido falso. Ofertas y noticias mantienen placeholder.
+- **Textos legales definitivos**: términos y reclamaciones tienen contenido
+  preliminar; el real lo cargará la administración desde el CMS.
+- Faltan las rutas de portales (`/cliente`, `/proveedor`, `/login`): pasos
+  posteriores del roadmap.

@@ -13,4 +13,8 @@ export const sitio = {
   descripcion: process.env.NEXT_PUBLIC_SITE_DESCRIPTION ?? "",
   /** URL de Facebook de la instancia (opcional; el footer solo lo muestra si existe). */
   facebook: process.env.NEXT_PUBLIC_SITE_FACEBOOK ?? "",
+  /** Logo sobre fondo claro (header). Vacío = wordmark de texto. Ruta de media o URL. */
+  logo: process.env.NEXT_PUBLIC_SITE_LOGO ?? "",
+  /** Logo sobre fondo oscuro (footer/topbar). Vacío = usa el wordmark de texto. */
+  logoBlanco: process.env.NEXT_PUBLIC_SITE_LOGO_BLANCO ?? "",
 };
