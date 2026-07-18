@@ -37,6 +37,13 @@ public sealed class PortalController(IConsultaDocumentosErp documentos) : Contro
     public Task<IActionResult> LiquidacionPagos(DateTime? desde, DateTime? hasta, CancellationToken ct)
         => Movimientos(documentos.LiquidacionPagosAsync, desde, hasta, ct);
 
+    /// <summary>Mis facturas (Proveedor).</summary>
+    [HttpGet("mis-facturas")]
+    [Authorize(Roles = Roles.Ven.MisFacturas)]
+    [ProducesResponseType(typeof(IReadOnlyList<MovimientoErp>), StatusCodes.Status200OK)]
+    public Task<IActionResult> MisFacturas(DateTime? desde, DateTime? hasta, CancellationToken ct)
+        => Movimientos(documentos.MisFacturasAsync, desde, hasta, ct);
+
     // Patrón común (DRY): toma el IdAnexo del token, normaliza el rango y consulta.
     private async Task<IActionResult> Movimientos(
         Func<int, DateTime, DateTime, CancellationToken, Task<IReadOnlyList<MovimientoErp>>> consulta,

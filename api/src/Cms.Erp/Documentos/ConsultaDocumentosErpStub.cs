@@ -12,6 +12,9 @@ public sealed class ConsultaDocumentosErpStub : IConsultaDocumentosErp
     public Task<IReadOnlyList<MovimientoErp>> LiquidacionPagosAsync(int idAnexo, DateTime desde, DateTime hasta, CancellationToken ct = default)
         => Muestra("LIQ", "ADELANTO");
 
+    public Task<IReadOnlyList<MovimientoErp>> MisFacturasAsync(int idAnexo, DateTime desde, DateTime hasta, CancellationToken ct = default)
+        => Muestra("FACTURA", "N/C");
+
     private static Task<IReadOnlyList<MovimientoErp>> Muestra(string tipo1, string tipo2)
     {
         var hoy = DateTime.Today;

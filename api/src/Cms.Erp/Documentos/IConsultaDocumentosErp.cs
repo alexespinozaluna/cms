@@ -14,4 +14,8 @@ public interface IConsultaDocumentosErp
     /// <summary>"Liquidación de pagos": documentos VA del concesionario.</summary>
     Task<IReadOnlyList<MovimientoErp>> LiquidacionPagosAsync(
         int idAnexo, DateTime desde, DateTime hasta, CancellationToken ct = default);
+
+    /// <summary>"Mis facturas": facturas del proveedor (origen a confirmar).</summary>
+    Task<IReadOnlyList<MovimientoErp>> MisFacturasAsync(
+        int idAnexo, DateTime desde, DateTime hasta, CancellationToken ct = default);
 }

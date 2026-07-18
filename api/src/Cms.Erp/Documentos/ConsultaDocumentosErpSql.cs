@@ -20,6 +20,9 @@ public sealed class ConsultaDocumentosErpSql(string cadenaConexion) : IConsultaD
     public Task<IReadOnlyList<MovimientoErp>> LiquidacionPagosAsync(int idAnexo, DateTime desde, DateTime hasta, CancellationToken ct = default)
         => EjecutarAsync("dbo.spWebLiquidacionPagos", idAnexo, desde, hasta, ct);
 
+    public Task<IReadOnlyList<MovimientoErp>> MisFacturasAsync(int idAnexo, DateTime desde, DateTime hasta, CancellationToken ct = default)
+        => EjecutarAsync("dbo.spWebMisFacturas", idAnexo, desde, hasta, ct);
+
     private async Task<IReadOnlyList<MovimientoErp>> EjecutarAsync(
         string sp, int idAnexo, DateTime desde, DateTime hasta, CancellationToken ct)
     {

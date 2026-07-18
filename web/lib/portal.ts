@@ -34,7 +34,8 @@ export const opcionesPortal: OpcionPortal[] = [
     titulo: "Mis facturas",
     descripcion: "Estado de tus facturas presentadas.",
     roles: ["Proveedor"],
-    disponible: false,
+    href: "/portal/mis-facturas",
+    disponible: true,
   },
   {
     clave: "boleta-pago",

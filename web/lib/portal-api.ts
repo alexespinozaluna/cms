@@ -48,3 +48,6 @@ export const obtenerEstadoCuenta = (desde?: string, hasta?: string) =>
 
 export const obtenerLiquidacionPagos = (desde?: string, hasta?: string) =>
   conRango("liquidacion-pagos", desde, hasta);
+
+export const obtenerMisFacturas = (desde?: string, hasta?: string) =>
+  conRango("mis-facturas", desde, hasta);
