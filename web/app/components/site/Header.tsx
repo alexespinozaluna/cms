@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { MenuItem } from "@/lib/content-api";
 import { sitio } from "@/lib/sitio";
 import Logo from "./Logo";
+import SesionAcciones from "./SesionAcciones";
 
 function ItemNav({ item }: { item: MenuItem }) {
   if (item.hijos.length === 0) {
@@ -67,12 +68,7 @@ export default function Header({ menu }: { menu: MenuItem[] }) {
             ))}
           </nav>
           <div className="hidden items-center gap-2.5 sm:flex">
-            <Link
-              href="/#portales"
-              className="rounded-lg border-2 border-verde px-4 py-2 text-sm font-bold text-verde hover:bg-papel"
-            >
-              Iniciar sesión
-            </Link>
+            <SesionAcciones />
             <Link
               href="/#ofertas"
               className="rounded-lg border-2 border-rojo bg-rojo px-4 py-2 text-sm font-bold text-white hover:brightness-110"

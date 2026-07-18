@@ -71,16 +71,33 @@ Verificado el 18/07/2026: registro 201, email duplicado 400, documento con
 formato inválido 400, login 200, contraseña incorrecta 401, `/yo` 200/401.
 Tablas de Identity creadas en el esquema `auth`.
 
-## 4. Pendientes conocidos
+## 4. Pantallas de auth en Next.js (18/07/2026)
+
+- Librerías: `react-hook-form` + `zod` + `@hookform/resolvers` (CLAUDE.md §4).
+- `web/lib/auth.ts`: cliente de la API (`registrarCliente`, `login`), esquemas
+  zod que **espejan la validación del backend** (CIP/DNI 8-9 dígitos, correo,
+  contraseña ≥8 con mayúscula/minúscula/número) y manejo de sesión en el
+  navegador (`localStorage` + cookie `tb_sesion` legible para futuros guards).
+- Pantallas (grupo de rutas `app/(auth)/`): `login`, `registro` (cliente, con
+  validación CIP/DNI vía la API), `recuperar` (placeholder hasta el correo).
+  Componentes `AuthShell` y `CampoTexto` reutilizables.
+- `SesionAcciones` en el header: muestra "Iniciar sesión" o el correo + "Salir"
+  según la sesión (client component, sin parpadeo de hidratación).
+
+Verificado el 18/07/2026: `tsc` y `npm run build` sin errores; las tres
+pantallas renderizan sus campos; el wiring cliente→`/api/auth` queda en el
+bundle. El flujo real usa la API en `NEXT_PUBLIC_CONTENT_API_URL` (5080).
+
+## 5. Pendientes conocidos
 
 - **SP real del ERP**: hoy el validador es un stub; falta el SP de solo lectura
   en SQL Server y su implementación Dapper.
 - **Alta de proveedor** (por Admin, contraseña temporal + cambio obligatorio al
   primer login) y **recuperación de contraseña por correo**: no incluidos en
-  esta ronda (requieren el servicio de correo).
+  esta ronda (requieren el servicio de correo). La pantalla `/recuperar` es un
+  placeholder.
 - **Confirmación de email**: `RequireConfirmedEmail` está en false hasta tener
   el flujo de correo.
-- **Autorización por rol en endpoints del CMS/portales**: se aplicará al
-  construir los portales de cliente/proveedor y el panel admin.
-- **Frontend**: faltan las pantallas `/registro`, `/login`, `/recuperar` y el
-  manejo del token en Next.js.
+- **Autorización por rol y guards de ruta**: los portales de cliente/proveedor
+  y el panel admin aplicarán `[Authorize]` en la API y protección de rutas en
+  Next.js (la cookie `tb_sesion` ya permite un middleware de guarda).
