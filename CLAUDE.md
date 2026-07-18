@@ -116,7 +116,7 @@ Reglas duras:
   slug → renderiza bloques. Slug inexistente → `notFound()`.
 - El menú es data del CMS: `{ etiqueta, url, tipo: "contenido"|"sistema", orden }`.
 - **Slugs reservados** (validar en la API del CMS al crear páginas):
-  `registro, login, recuperar, cliente, proveedor, admin, api`.
+  `registro, login, recuperar, portal, cliente, proveedor, admin, api`.
 
 ## 7. Diseño aprobado
 

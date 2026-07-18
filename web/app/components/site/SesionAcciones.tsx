@@ -22,9 +22,12 @@ export default function SesionAcciones() {
   if (sesion) {
     return (
       <div className="flex items-center gap-3">
-        <span className="hidden text-sm font-semibold text-verde-osc md:inline">
+        <Link
+          href="/portal"
+          className="hidden max-w-[16ch] truncate text-sm font-semibold text-verde-osc hover:text-rojo md:inline"
+        >
           {sesion.nombre || sesion.usuario}
-        </span>
+        </Link>
         <button
           type="button"
           onClick={() => {

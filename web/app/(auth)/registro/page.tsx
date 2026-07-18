@@ -22,7 +22,7 @@ export default function RegistroPage() {
     setErrorGeneral(null);
     try {
       guardarSesion(await registrar(data));
-      router.push("/");
+      router.push("/portal");
       router.refresh();
     } catch (e) {
       setErrorGeneral(e instanceof AuthError ? e.message : "No se pudo completar el registro.");

@@ -23,7 +23,7 @@ export default function LoginPage() {
     try {
       guardarSesion(await login(data));
       const next = new URLSearchParams(window.location.search).get("next");
-      router.push(next && next.startsWith("/") ? next : "/");
+      router.push(next && next.startsWith("/") ? next : "/portal");
       router.refresh();
     } catch (e) {
       setErrorGeneral(e instanceof AuthError ? e.message : "No se pudo iniciar sesión.");
