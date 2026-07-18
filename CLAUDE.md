@@ -187,16 +187,20 @@ Diseñar en PostgreSQL: `paginas` (slug, titulo, plantilla, estado, vigencia),
 esto es lo "metadata-driven"). Incluir formularios dinámicos como tipo de
 bloque (`form` con campos JSON) y tabla de respuestas.
 
-## 11. Documentación obligatoria por proceso
+## 11. Documentación obligatoria por cambio
 
-- Cada proceso/paso del roadmap que se complete debe dejar su documentación en
-  la carpeta `docs/` (en la raíz del repo), en español, formato Markdown.
-- Un archivo por proceso, con nombre descriptivo en kebab-case
-  (ej. `docs/01-modelo-cms-postgresql.md`, `docs/02-content-api.md`).
+- **Cada cambio tiene su propio documento independiente** en `docs/` (raíz del
+  repo), en español y Markdown. No se acumulan varios cambios en un archivo.
+- Nombre del archivo: **`yyyymmdd####_nombre_del_cambio.md`**
+  - `yyyymmdd####` = fecha + secuencia del día pegadas, sin separador
+    (`yyyymmdd` fecha; `####` correlativo con ceros a la izquierda: `0001`…).
+  - `nombre_del_cambio` = descriptivo en `snake_case`.
+  - Ej.: `docs/202607180002_login_unico_roles_erp.md`.
 - Contenido mínimo: qué se hizo, decisiones tomadas, cómo ejecutarlo/probarlo
   en local, y pendientes conocidos.
-- La documentación se crea o actualiza en el mismo momento en que se termina
-  el proceso — no se deja para después.
+- El documento se crea en el mismo momento en que se termina el cambio (junto
+  con su commit), no se deja para después. Si un cambio posterior corrige otro,
+  se crea un documento nuevo (no se reescribe el anterior; se enlaza).
 
 ## 12. Roadmap acordado (migración incremental)
 
