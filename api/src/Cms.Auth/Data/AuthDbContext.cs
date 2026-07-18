@@ -1,0 +1,21 @@
+using Cms.Auth.Modelo;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace Cms.Auth.Data;
+
+/// <summary>
+/// Contexto de Identity (único uso de EF Core en el proyecto). Todas las tablas
+/// viven en el esquema 'auth' del mismo PostgreSQL del CMS.
+/// </summary>
+public sealed class AuthDbContext(DbContextOptions<AuthDbContext> options)
+    : IdentityDbContext<Usuario>(options)
+{
+    public const string Esquema = "auth";
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        builder.HasDefaultSchema(Esquema);
+    }
+}

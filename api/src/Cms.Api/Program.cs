@@ -1,4 +1,6 @@
+using Cms.Auth;
 using Cms.Content;
+using Cms.Erp;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 var cadenaCms = builder.Configuration.GetConnectionString("CmsDb")
     ?? throw new InvalidOperationException("Falta la cadena de conexión 'CmsDb'.");
 builder.Services.AddDominioContenido(cadenaCms);
+
+// Identidad (EF Core + Identity, esquema auth) y acceso al ERP (validación CIP/DNI)
+builder.Services.AddDominioAuth(cadenaCms, builder.Configuration);
+builder.Services.AddDominioErp();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -40,9 +46,15 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/media"
 });
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 // Sondeo de salud para IIS/ARR
 app.MapGet("/health", () => Results.Ok(new { estado = "ok" }));
+
+// Migraciones de Identity + roles base al arrancar
+await app.Services.PrepararAuthAsync();
 
 app.Run();

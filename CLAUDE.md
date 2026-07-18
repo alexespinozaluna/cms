@@ -58,9 +58,15 @@ Reglas duras:
 - **Backend**: ASP.NET Core 8 Web API, C#.
   - **Dapper** para llamar SPs de SQL Server (ERP).
   - **Dapper + Npgsql** para el modelo del CMS en PostgreSQL (decisión: misma
-    librería de acceso en ambos dominios; se descartó EF Core).
+    librería de acceso en ambos dominios; se descartó EF Core **para los
+    dominios de datos** —CMS y ERP—).
   - **ASP.NET Identity + JWT** para autenticación; roles: `Cliente`,
-    `Proveedor`, `Editor`, `Admin`. Identity vive en su propio esquema/BD.
+    `Proveedor`, `Editor`, `Admin`. Identity vive en su propio esquema/BD
+    (esquema `auth` en el mismo PostgreSQL). **EF Core se usa SOLO aquí**,
+    acotado al proyecto `Cms.Auth` y sus tablas de Identity; nunca toca CMS
+    ni ERP (decisión 18/07/2026: es el store estándar de Identity y evita
+    escribir stores a mano). El ERP se consulta para validar CIP/DNI detrás
+    de una interfaz mockeable (`Cms.Erp`) hasta tener el SP real.
   - Exportaciones: **ClosedXML** (Excel), **QuestPDF** (PDF).
   - Validación backend obligatoria (FluentValidation o DataAnnotations).
 - **Frontend**: Next.js App Router, TypeScript, Tailwind CSS,

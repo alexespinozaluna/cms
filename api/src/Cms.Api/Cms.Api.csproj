@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Cms.Content\Cms.Content.csproj" />
+    <ProjectReference Include="..\Cms.Erp\Cms.Erp.csproj" />
+    <ProjectReference Include="..\Cms.Auth\Cms.Auth.csproj" />
   </ItemGroup>
 
 </Project>
