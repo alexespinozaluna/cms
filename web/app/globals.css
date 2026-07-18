@@ -15,13 +15,28 @@
   --font-sans: var(--font-public-sans), sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: var(--color-papel);
   color: var(--color-texto);
   font-family: var(--font-sans);
+  line-height: 1.55;
 }
 
-/* Titulares y precios: Archivo condensado, pesado, en mayúsculas */
+/* Titulares (hero y secciones): Archivo condensado pesado, en CAJA MIXTA
+   como la maqueta ("Ofertas destacadas", no "OFERTAS DESTACADAS"). */
+.display {
+  font-family: var(--font-display);
+  font-weight: 850;
+  font-stretch: 78%;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
+}
+
+/* Etiquetas, stickers y precios: Archivo condensado en MAYÚSCULAS. */
 .titular {
   font-family: var(--font-display);
   font-weight: 800;
@@ -30,16 +45,26 @@ body {
   text-transform: uppercase;
 }
 
-/* Firma visual: cartel de precio de góndola (tarjeta rotada con sticker) */
+/* Firma visual: solo el cartel de góndola del hero se inclina. */
 .cartel {
-  transform: rotate(-2deg);
-  transition: transform 0.2s ease;
+  transform: rotate(1.6deg);
 }
-.cartel:hover {
-  transform: rotate(0deg) scale(1.02);
+
+/* Al saltar por ancla, deja aire bajo el header fijo. */
+section[id] {
+  scroll-margin-top: 96px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-rojo);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   *,
   *::before,
   *::after {

@@ -9,7 +9,9 @@ import { sitio } from "@/lib/sitio";
 const archivo = Archivo({
   variable: "--font-archivo",
   subsets: ["latin"],
-  weight: ["700", "800", "900"],
+  // Fuente variable: se cargan los ejes de peso (por defecto) y ancho (wdth)
+  // para reproducir el Archivo condensado de la maqueta (font-stretch).
+  axes: ["wdth"],
 });
 
 const publicSans = Public_Sans({

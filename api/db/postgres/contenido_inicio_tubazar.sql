@@ -14,6 +14,10 @@
 -- Motivo            : Paso 2 del roadmap — sitio público con el diseño aprobado
 -- Historial         :
 --   17/07/2026  Alex Espinoza  Versión inicial
+--   17/07/2026  Alex Espinoza  Menú alineado a la maqueta: enlaces de ancla a
+--                              las secciones de la portada (Ofertas, Tiendas,
+--                              Concesionarios, Noticias). Los portales pasan a
+--                              accesos del topbar/banda, fuera del menú CMS.
 --
 -- Nota de control   : el script es idempotente — puede re-ejecutarse: hace
 --                     upsert de la página, borra y re-inserta sus bloques y
@@ -156,22 +160,17 @@ JOIN tipos_bloque tb ON tb.codigo = v.tipo;
 
 -- ----------------------------------------------------------------------------
 -- 3. Menú definitivo (reemplazo completo)
---    Los anclajes de sección (#ofertas, #tiendas...) de la maqueta llegarán
---    cuando los componentes de bloque expongan ids de sección.
+--    Enlaces de ancla a las secciones de la portada (los componentes de bloque
+--    exponen ids: #ofertas, #tiendas, #concesionarios, #noticias). El acceso a
+--    los portales vive en el topbar del header y en la banda de portales.
 -- ----------------------------------------------------------------------------
 DELETE FROM menu_items;
 
 INSERT INTO menu_items (etiqueta, url, tipo, orden) VALUES
-    ('Inicio',   '/', 'contenido', 1),
-    ('Portales', '#', 'sistema',   2);
-
-INSERT INTO menu_items (padre_id, etiqueta, url, tipo, orden)
-SELECT m.id, h.etiqueta, h.url, 'sistema', h.orden
-FROM   menu_items m,
-       (VALUES ('Portal Clientes',    '/cliente',   1),
-               ('Portal Proveedores', '/proveedor', 2)
-       ) AS h(etiqueta, url, orden)
-WHERE  m.etiqueta = 'Portales' AND m.padre_id IS NULL;
+    ('Ofertas',        '/#ofertas',        'contenido', 1),
+    ('Tiendas',        '/#tiendas',        'contenido', 2),
+    ('Concesionarios', '/#concesionarios', 'contenido', 3),
+    ('Noticias',       '/#noticias',       'contenido', 4);
 
 COMMIT;
 
