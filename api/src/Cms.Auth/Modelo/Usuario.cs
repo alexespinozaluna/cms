@@ -9,8 +9,9 @@ namespace Cms.Auth.Modelo;
 /// </summary>
 public sealed class Usuario : IdentityUser
 {
-    /// <summary>Vínculo a Anexo (ERP). Fuente de verdad de la identidad.</summary>
-    public int IdAnexo { get; set; }
+    /// <summary>Vínculo a Anexo (ERP). Único cuando existe; null para usuarios
+    /// internos del CMS (Editor/Admin) que no vienen del ERP.</summary>
+    public int? IdAnexo { get; set; }
 
     public string? Cip { get; set; }
     public string? NroDni { get; set; }

@@ -17,6 +17,21 @@ public sealed class AuthController(
     IConsultaPersonasErp erp,
     IGeneradorJwt jwt) : ControllerBase
 {
+    /// <summary>
+    /// Verificación previa al registro: valida que la persona exista en el ERP
+    /// y que no esté ya registrada. Devuelve el nombre para autocompletar.
+    /// </summary>
+    [HttpPost("verificar-documento")]
+    [ProducesResponseType(typeof(VerificacionResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> VerificarDocumento(VerificarDocumentoRequest req, CancellationToken ct)
+    {
+        var (persona, error) = await ResolverPersonaDisponibleAsync(req.Documento, req.Tipo, ct);
+        if (error is not null) return error;
+        return Ok(new VerificacionResponse(persona!.Nombre, RolesDe(persona)));
+    }
+
     /// <summary>Registro único: valida la persona en el ERP y crea su cuenta web.</summary>
     [HttpPost("registro")]
     [ProducesResponseType(typeof(AuthRespuesta), StatusCodes.Status201Created)]
@@ -25,16 +40,12 @@ public sealed class AuthController(
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> Registrar(RegistroRequest req, CancellationToken ct)
     {
-        var persona = await erp.BuscarPorDocumentoAsync(req.Documento, ct);
-        if (persona is null || !persona.TieneAlgunRol)
-            return UnprocessableEntity(new { error = "El CIP/DNI no está registrado en el ERP o no tiene un rol habilitado." });
-
-        if (await usuarios.Users.AnyAsync(u => u.IdAnexo == persona.IdAnexo, ct))
-            return Conflict(new { error = "Ya existe una cuenta para esta persona." });
+        var (persona, error) = await ResolverPersonaDisponibleAsync(req.Documento, req.Tipo, ct);
+        if (error is not null) return error;
 
         var usuario = new Usuario
         {
-            UserName = persona.Cip.Length > 0 ? persona.Cip : (persona.NroDni ?? req.Documento),
+            UserName = persona!.Cip.Length > 0 ? persona.Cip : (persona.NroDni ?? req.Documento),
             Email = req.Correo,
             IdAnexo = persona.IdAnexo,
             Cip = persona.Cip,
@@ -42,13 +53,26 @@ public sealed class AuthController(
             Telefono = req.Telefono,
             NombreCompleto = req.NombreCompleto ?? persona.Nombre,
         };
-
-        var creacion = await usuarios.CreateAsync(usuario, req.Password);
-        if (!creacion.Succeeded)
-            return BadRequest(new { errores = creacion.Errors.Select(e => e.Description) });
-
         var roles = RolesDe(persona);
-        await usuarios.AddToRolesAsync(usuario, roles);
+
+        try
+        {
+            var creacion = await usuarios.CreateAsync(usuario, req.Password);
+            if (!creacion.Succeeded)
+            {
+                // Doble envío que pasó la verificación previa: el índice único de
+                // Identity (UserName) rechaza el segundo → 409 en vez de 400.
+                if (creacion.Errors.Any(e => e.Code.Contains("Duplicate", StringComparison.OrdinalIgnoreCase)))
+                    return Conflict(new { error = "Ya existe una cuenta para esta persona." });
+                return BadRequest(new { errores = creacion.Errors.Select(e => e.Description) });
+            }
+            await usuarios.AddToRolesAsync(usuario, roles);
+        }
+        catch (DbUpdateException)
+        {
+            // Carrera contra el índice único de IdAnexo (doble clic simultáneo).
+            return Conflict(new { error = "Ya existe una cuenta para esta persona." });
+        }
 
         var (token, expira) = jwt.Generar(usuario, roles);
         return CreatedAtAction(nameof(Yo),
@@ -67,7 +91,7 @@ public sealed class AuthController(
         if (usuario is null || !await usuarios.CheckPasswordAsync(usuario, req.Password))
             return Unauthorized(new { error = "Credenciales inválidas." });
 
-        var persona = await erp.BuscarPorDocumentoAsync(usuario.Cip ?? usuario.NroDni ?? doc, ct);
+        var persona = await erp.BuscarPorDocumentoAsync(usuario.Cip ?? usuario.NroDni ?? doc, TipoDocumentoBusqueda.Ambos, ct);
         if (persona is null || !persona.TieneAlgunRol)
             return StatusCode(StatusCodes.Status403Forbidden,
                 new { error = "Su acceso no está habilitado en el ERP." });
@@ -87,6 +111,25 @@ public sealed class AuthController(
         cip = User.FindFirstValue("cip"),
         roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value),
     });
+
+    /// <summary>
+    /// Resuelve la persona del ERP y valida que exista con algún rol (422) y que
+    /// no esté ya registrada en PostgreSQL (409). Centraliza la regla (DRY) para
+    /// verificar-documento y registro.
+    /// </summary>
+    private async Task<(PersonaErp? persona, IActionResult? error)> ResolverPersonaDisponibleAsync(
+        string documento, int tipo, CancellationToken ct)
+    {
+        var persona = await erp.BuscarPorDocumentoAsync(documento, (TipoDocumentoBusqueda)tipo, ct);
+        if (persona is null || !persona.TieneAlgunRol)
+            return (null, UnprocessableEntity(
+                new { error = "El CIP/DNI no está registrado en el ERP o no tiene un rol habilitado." }));
+
+        if (await usuarios.Users.AnyAsync(u => u.IdAnexo == persona.IdAnexo, ct))
+            return (null, Conflict(new { error = "Ya existe una cuenta para esta persona. Inicia sesión." }));
+
+        return (persona, null);
+    }
 
     private static List<string> RolesDe(PersonaErp p)
     {

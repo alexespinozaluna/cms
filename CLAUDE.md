@@ -92,8 +92,12 @@ Reglas duras:
   extendido: usuario=CIP/DNI, correo, teléfono, contraseña hasheada, `IdAnexo`).
   El ERP NO se escribe: se consulta solo lectura (SP/vista sobre `Anexo`, por
   `CodAnexo` o `Documento`) para validar existencia y traer flags.
-- **Registro**: form → API valida contra el ERP → si existe con algún rol, crea
-  la cuenta web y asigna los roles derivados.
+- **Registro**: el form permite elegir **tipo de documento (DNI o CIP)**; la API
+  busca en el ERP según ese tipo (SP `spWebAnexoBuscarPorDocumento @Tipo`).
+  Valida SIEMPRE **(a) que exista en el ERP con algún rol** y **(b) que no esté
+  ya registrado** en PostgreSQL. Si existe y está disponible, **autocompleta el
+  nombre** (y datos) desde el ERP (solo lectura) y recién crea la cuenta con los
+  roles derivados. El botón "Crear" no se puede presionar dos veces.
 - **Login**: usuario (CIP/DNI) + contraseña → valida la contraseña en Postgres
   y **relee los flags del ERP en vivo** para sincronizar roles (quien pasa a
   tener otro rol lo gana sin re-registrarse).
@@ -172,12 +176,23 @@ cms/
   de tabla, `syn`/`Syn_` sinónimos.
 - Scripts ad-hoc documentan variables de control; las BIT usan prefijo `b`
   (ej. `@bEjecutar`).
+- **Procedimientos genéricos y parametrizables (DRY/SOLID)**: no crear SPs casi
+  idénticos; usar parámetros de control para variar el criterio. Ej.:
+  `spWebAnexoBuscarPorDocumento @Documento, @Tipo` con `@Tipo` = 0 (CIP o DNI),
+  1 (DNI), 2 (CIP). Un solo proc cubre las variantes. Aplicar DRY y SOLID tanto
+  en el proc como en el código que lo consume.
+- **Todo script de SQL Server va a `api/db/mssql/` y lo ejecuta el usuario**
+  manualmente (el ERP es intocable; Claude nunca ejecuta cambios en el ERP).
 
 ### C# y TypeScript
 - C#: convenciones .NET estándar; DTOs para todo lo expuesto; nada de
-  entidades EF directas en respuestas.
+  entidades EF directas en respuestas. Aplicar DRY y SOLID.
 - TS: componentes de bloque tipados contra el JSON del CMS; validación de
   formularios con zod espejando la validación del backend.
+- **Formularios que crean/registran (anti doble-envío)**: el botón de envío se
+  **deshabilita tras el primer clic** y mientras dura la petición (no permitir
+  doble clic). Además el backend **garantiza unicidad** (índice único /
+  validación previa) para que un doble envío o reintento NUNCA cree duplicados.
 
 ## 10. Modelo CMS (siguiente paso — aún NO diseñado en detalle)
 

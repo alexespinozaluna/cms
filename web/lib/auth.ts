@@ -2,6 +2,10 @@ import { z } from "zod";
 
 const base = process.env.NEXT_PUBLIC_CONTENT_API_URL ?? "";
 
+/** Tipo de documento (coincide con @Tipo del SP). */
+export const TIPO_DNI = 1;
+export const TIPO_CIP = 2;
+
 // ---------- Esquemas (espejo de la validación del backend) ----------
 
 const password = z
@@ -11,14 +15,15 @@ const password = z
   .regex(/[A-Z]/, "Debe incluir una mayúscula.")
   .regex(/\d/, "Debe incluir un número.");
 
-const documento = z.string().regex(/^\d{8,9}$/, "El CIP/DNI debe tener 8 o 9 dígitos.");
+const documento = z.string().regex(/^\d{8,9}$/, "El documento debe tener 8 o 9 dígitos.");
 
 export const registroSchema = z.object({
+  // valor del <select> (string); se convierte a número al llamar la API
+  tipo: z.enum([String(TIPO_DNI), String(TIPO_CIP)]),
   documento,
   correo: z.string().email("Correo inválido."),
   telefono: z.string().max(20).optional().or(z.literal("")),
   password,
-  nombreCompleto: z.string().max(150).optional().or(z.literal("")),
 });
 
 export const loginSchema = z.object({
@@ -28,6 +33,11 @@ export const loginSchema = z.object({
 
 export type RegistroInput = z.infer<typeof registroSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+
+export interface Verificacion {
+  nombre: string;
+  roles: string[];
+}
 
 export interface Sesion {
   token: string;
@@ -53,7 +63,7 @@ function mensajeDeError(data: unknown): string | null {
   return null;
 }
 
-async function postAuth(path: string, body: unknown): Promise<Sesion> {
+async function postJson<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${base}/api/auth/${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -63,15 +73,29 @@ async function postAuth(path: string, body: unknown): Promise<Sesion> {
   if (!res.ok) {
     throw new AuthError(mensajeDeError(data) ?? `Error ${res.status}. Intenta de nuevo.`);
   }
-  return data as Sesion;
+  return data as T;
 }
 
-export function registrar(input: RegistroInput) {
-  return postAuth("registro", input);
+/** Paso previo al registro: valida existencia en ERP + no registrado; trae el nombre. */
+export function verificarDocumento(documento: string, tipo: number) {
+  return postJson<Verificacion>("verificar-documento", { documento, tipo });
+}
+
+export interface RegistroPayload {
+  documento: string;
+  tipo: number;
+  correo: string;
+  telefono?: string;
+  password: string;
+  nombreCompleto?: string;
+}
+
+export function registrar(input: RegistroPayload) {
+  return postJson<Sesion>("registro", input);
 }
 
 export function login(input: LoginInput) {
-  return postAuth("login", input);
+  return postJson<Sesion>("login", input);
 }
 
 // ---------- Sesión en el navegador ----------
@@ -81,7 +105,6 @@ const CLAVE = "tb_sesion";
 export function guardarSesion(sesion: Sesion) {
   if (typeof window === "undefined") return;
   localStorage.setItem(CLAVE, JSON.stringify(sesion));
-  // Cookie legible para poder proteger rutas con middleware más adelante.
   const expira = new Date(sesion.expira).toUTCString();
   document.cookie = `${CLAVE}=1; path=/; expires=${expira}; SameSite=Lax`;
 }

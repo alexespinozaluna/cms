@@ -17,5 +17,13 @@ public sealed class AuthDbContext(DbContextOptions<AuthDbContext> options)
     {
         base.OnModelCreating(builder);
         builder.HasDefaultSchema(Esquema);
+
+        // Una persona del ERP (IdAnexo) no puede tener más de una cuenta web.
+        // Evita duplicados por doble envío/reintento. En PostgreSQL los NULL
+        // (usuarios internos sin IdAnexo) se consideran distintos, así que
+        // pueden coexistir varios.
+        builder.Entity<Usuario>()
+            .HasIndex(u => u.IdAnexo)
+            .IsUnique();
     }
 }

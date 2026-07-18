@@ -27,8 +27,8 @@ public sealed class GeneradorJwt(IOptions<JwtOptions> opciones) : IGeneradorJwt
             new(JwtRegisteredClaimNames.Email, usuario.Email ?? ""),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
-        if (usuario.IdAnexo > 0)
-            claims.Add(new Claim("id_anexo", usuario.IdAnexo.ToString()));
+        if (usuario.IdAnexo is int idAnexo && idAnexo > 0)
+            claims.Add(new Claim("id_anexo", idAnexo.ToString()));
         if (!string.IsNullOrEmpty(usuario.Cip))
             claims.Add(new Claim("cip", usuario.Cip));
         claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));

@@ -2,11 +2,29 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Cms.Api.Dtos;
 
+/// <summary>Verificación previa: existe en el ERP y no está ya registrado.</summary>
+public sealed class VerificarDocumentoRequest
+{
+    [Required, RegularExpression(@"^\d{8,9}$", ErrorMessage = "El CIP/DNI debe tener 8 o 9 dígitos.")]
+    public string Documento { get; set; } = "";
+
+    /// <summary>0 = CIP o DNI, 1 = DNI, 2 = CIP.</summary>
+    [Range(0, 2)]
+    public int Tipo { get; set; }
+}
+
+/// <summary>Datos que se muestran/autocompletan cuando la persona es válida.</summary>
+public sealed record VerificacionResponse(string Nombre, IReadOnlyList<string> Roles);
+
 /// <summary>Registro único: la persona debe existir en el ERP (Anexo) con algún rol.</summary>
 public sealed class RegistroRequest
 {
     [Required, RegularExpression(@"^\d{8,9}$", ErrorMessage = "El CIP/DNI debe tener 8 o 9 dígitos.")]
     public string Documento { get; set; } = "";
+
+    /// <summary>0 = CIP o DNI, 1 = DNI, 2 = CIP.</summary>
+    [Range(0, 2)]
+    public int Tipo { get; set; }
 
     [Required, EmailAddress]
     public string Correo { get; set; } = "";

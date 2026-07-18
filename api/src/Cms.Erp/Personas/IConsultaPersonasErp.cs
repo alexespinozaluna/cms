@@ -7,8 +7,11 @@ namespace Cms.Erp.Personas;
 public interface IConsultaPersonasErp
 {
     /// <summary>
-    /// Busca por CodAnexo (CIP) o Documento (DNI). Devuelve la persona solo si
-    /// está activa y tiene al menos un rol; null en caso contrario.
+    /// Busca por CodAnexo (CIP) y/o Documento (DNI) según <paramref name="tipo"/>.
+    /// Devuelve la persona solo si está activa y tiene al menos un rol; null si no.
     /// </summary>
-    Task<PersonaErp?> BuscarPorDocumentoAsync(string cipDni, CancellationToken ct = default);
+    Task<PersonaErp?> BuscarPorDocumentoAsync(
+        string documento,
+        TipoDocumentoBusqueda tipo = TipoDocumentoBusqueda.Ambos,
+        CancellationToken ct = default);
 }
