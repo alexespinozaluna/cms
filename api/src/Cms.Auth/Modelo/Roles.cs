@@ -17,4 +17,14 @@ public static class Roles
     public static readonly string[] DerivadosErp = [Cliente, Proveedor, Concesionario, Trabajador];
 
     public static readonly string[] Todos = [Cliente, Proveedor, Concesionario, Trabajador, Editor, Admin];
+
+    /// <summary>Matriz opción → roles que la ven (constantes para [Authorize(Roles=...)]).</summary>
+    public static class Ven
+    {
+        public const string EstadoCuenta = Cliente;
+        public const string MisCompras = Cliente + "," + Proveedor + "," + Trabajador;
+        public const string MisFacturas = Proveedor;
+        public const string BoletaPago = Trabajador;
+        public const string LiquidacionPagos = Concesionario;
+    }
 }

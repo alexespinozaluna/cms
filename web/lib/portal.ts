@@ -25,7 +25,8 @@ export const opcionesPortal: OpcionPortal[] = [
     titulo: "Mis compras",
     descripcion: "Historial de tus compras y comprobantes.",
     roles: ["Cliente", "Proveedor", "Trabajador"],
-    disponible: false,
+    href: "/portal/mis-compras",
+    disponible: true,
   },
   {
     clave: "mis-facturas",
