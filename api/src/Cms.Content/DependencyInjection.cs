@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.AddScoped<IAdminPaginasRepository, AdminPaginasRepository>();
         services.AddScoped<IAdminBloquesRepository, AdminBloquesRepository>();
         services.AddScoped<IAdminMenuRepository, AdminMenuRepository>();
+        services.AddScoped<IAdminFormulariosRepository, AdminFormulariosRepository>();
         return services;
     }
 }

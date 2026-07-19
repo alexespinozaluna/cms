@@ -64,6 +64,9 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             <Link href="/admin/menu" className="hover:text-amarillo">
               Menú
             </Link>
+            <Link href="/admin/respuestas" className="hover:text-amarillo">
+              Respuestas
+            </Link>
             {sesion.roles.includes("Admin") && (
               <Link href="/admin/usuarios" className="hover:text-amarillo">
                 Usuarios

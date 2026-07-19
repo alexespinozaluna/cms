@@ -173,6 +173,42 @@ export const crearUsuarioInterno = (u: {
   roles: string[];
 }) => req<void>("usuarios/interno", "POST", u);
 
+// ---------- Formularios (respuestas) ----------
+
+export interface FormularioResumen {
+  bloqueId: number;
+  slug: string;
+  paginaTitulo: string;
+  titulo: string | null;
+  total: number;
+}
+
+export interface Respuesta {
+  id: number;
+  creadoEn: string;
+  datos: Record<string, unknown>;
+}
+
+export const listarFormularios = () => req<FormularioResumen[]>("formularios", "GET");
+export const listarRespuestas = (bloqueId: number) =>
+  req<Respuesta[]>(`formularios/${bloqueId}/respuestas`, "GET");
+
+export async function descargarRespuestasExcel(bloqueId: number): Promise<void> {
+  const sesion = obtenerSesion();
+  if (!sesion) throw new AdminError("Tu sesión expiró. Inicia sesión de nuevo.");
+  const res = await fetch(`${base}/api/admin/formularios/${bloqueId}/respuestas/excel`, {
+    headers: { Authorization: `Bearer ${sesion.token}` },
+  });
+  if (!res.ok) throw new AdminError(`No se pudo generar el Excel (${res.status}).`);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `respuestas-formulario-${bloqueId}.xlsx`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export const listarPaginas = () => req<PaginaAdmin[]>("paginas", "GET");
 export const obtenerPagina = (id: number) => req<PaginaAdmin>(`paginas/${id}`, "GET");
 export const crearPagina = (p: PaginaGuardar) => req<{ id: number }>("paginas", "POST", p);
