@@ -88,6 +88,9 @@ export default function PaginasListPage() {
                     <Link href={`/admin/paginas/${p.id}`} className="text-verde hover:underline">
                       Editar
                     </Link>
+                    <Link href={`/admin/paginas/${p.id}/bloques`} className="text-verde hover:underline">
+                      Bloques
+                    </Link>
                     {p.estado !== "publicado" && (
                       <button
                         onClick={() => accion(() => cambiarEstadoPagina(p.id, "publicado"))}

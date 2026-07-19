@@ -19,6 +19,7 @@ public static class DependencyInjection
         services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
         services.AddScoped<IContenidoRepository, ContenidoRepository>();
         services.AddScoped<IAdminPaginasRepository, AdminPaginasRepository>();
+        services.AddScoped<IAdminBloquesRepository, AdminBloquesRepository>();
         return services;
     }
 }

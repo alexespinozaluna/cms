@@ -56,6 +56,57 @@ function mensajeDeError(res: Response, data: unknown): string {
   return `Error ${res.status}. Intenta de nuevo.`;
 }
 
+// ---------- Bloques (metadata-driven) ----------
+
+export type ValorCampo =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | ValorCampo[]
+  | { [k: string]: ValorCampo };
+
+export interface CampoEsquema {
+  nombre: string;
+  tipo: string; // texto | textolargo | opcion | decimal | imagen | fecha | lista
+  etiqueta: string;
+  requerido?: boolean;
+  opciones?: string[];
+  campos?: CampoEsquema[]; // para tipo 'lista'
+}
+
+export interface TipoBloque {
+  id: number;
+  codigo: string;
+  nombre: string;
+  descripcion: string | null;
+  esquemaCampos: CampoEsquema[];
+}
+
+export interface Bloque {
+  id: number;
+  paginaId: number;
+  tipoBloqueId: number;
+  tipoCodigo: string;
+  tipoNombre: string;
+  orden: number;
+  estado: string;
+  vigenciaDesde: string | null;
+  vigenciaHasta: string | null;
+  contenido: Record<string, ValorCampo>;
+}
+
+export const listarTipos = () => req<TipoBloque[]>("tipos-bloque", "GET");
+export const listarBloques = (paginaId: number) => req<Bloque[]>(`paginas/${paginaId}/bloques`, "GET");
+export const crearBloque = (paginaId: number, tipoBloqueId: number, contenido: unknown, estado: string) =>
+  req<{ id: number }>(`paginas/${paginaId}/bloques`, "POST", { tipoBloqueId, contenido, estado });
+export const actualizarBloque = (id: number, contenido: unknown, estado: string) =>
+  req<void>(`bloques/${id}`, "PUT", { contenido, estado });
+export const reordenarBloques = (paginaId: number, ids: number[]) =>
+  req<void>(`paginas/${paginaId}/bloques/orden`, "PUT", { ids });
+export const eliminarBloque = (id: number) => req<void>(`bloques/${id}`, "DELETE");
+
 export const listarPaginas = () => req<PaginaAdmin[]>("paginas", "GET");
 export const obtenerPagina = (id: number) => req<PaginaAdmin>(`paginas/${id}`, "GET");
 export const crearPagina = (p: PaginaGuardar) => req<{ id: number }>("paginas", "POST", p);
