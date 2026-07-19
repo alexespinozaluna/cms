@@ -22,7 +22,8 @@ export const registroSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  codUsuario,
+  // El login acepta CodUsuario (6/9 díg.) o usuarios internos (admin/editor).
+  codUsuario: z.string().min(1, "Ingresa tu usuario."),
   password: z.string().min(1, "Ingresa tu contraseña."),
 });
 

@@ -61,7 +61,8 @@ public static class DependencyInjection
         return services;
     }
 
-    /// <summary>Aplica migraciones pendientes y crea los roles base (idempotente).</summary>
+    /// <summary>Aplica migraciones, crea los roles base y siembra el Admin
+    /// inicial interno (config Cms:AdminInicial). Idempotente.</summary>
     public static async Task PrepararAuthAsync(this IServiceProvider proveedor)
     {
         using var scope = proveedor.CreateScope();
@@ -73,5 +74,34 @@ public static class DependencyInjection
         foreach (var rol in Roles.Todos)
             if (!await roles.RoleExistsAsync(rol))
                 await roles.CreateAsync(new IdentityRole(rol));
+
+        await SembrarAdminInicialAsync(sp);
+    }
+
+    private static async Task SembrarAdminInicialAsync(IServiceProvider sp)
+    {
+        var config = sp.GetRequiredService<IConfiguration>().GetSection("Cms:AdminInicial");
+        var usuario = config["Usuario"];
+        var correo = config["Correo"];
+        var password = config["Password"];
+        if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(password))
+            return;
+
+        var usuarios = sp.GetRequiredService<UserManager<Usuario>>();
+        if (await usuarios.FindByNameAsync(usuario) is not null)
+            return;
+
+        // Cuenta INTERNA (no del ERP): IdUserRef null; rol Admin.
+        var admin = new Usuario
+        {
+            UserName = usuario,
+            CodUsuario = usuario,
+            Email = correo,
+            NombreCompleto = "Administrador web",
+            CambioPasswordPendiente = true,
+        };
+        var creacion = await usuarios.CreateAsync(admin, password);
+        if (creacion.Succeeded)
+            await usuarios.AddToRoleAsync(admin, Roles.Admin);
     }
 }

@@ -96,12 +96,24 @@ public sealed class AuthController(
         if (usuario is null || !await usuarios.CheckPasswordAsync(usuario, req.Password))
             return Unauthorized(new { error = "Credenciales inválidas." });
 
-        var persona = await erp.BuscarPorDocumentoAsync(usuario.CodUsuario ?? cod, TipoDocumentoBusqueda.Cip, ct);
-        if (persona is null || !persona.TieneAlgunRol)
-            return StatusCode(StatusCodes.Status403Forbidden,
-                new { error = "Su acceso no está habilitado en el ERP." });
+        List<string> roles;
+        if (usuario.IdUserRef.HasValue)
+        {
+            // Cuenta del ERP: relee los flags en vivo y sincroniza (conserva internos).
+            var persona = await erp.BuscarPorDocumentoAsync(usuario.CodUsuario ?? cod, TipoDocumentoBusqueda.Cip, ct);
+            var rolesErp = persona is not null && persona.TieneAlgunRol ? RolesDe(persona) : new List<string>();
+            roles = await SincronizarRolesErpAsync(usuario, rolesErp);
+        }
+        else
+        {
+            // Cuenta interna (Admin/Editor): sin ERP.
+            roles = (await usuarios.GetRolesAsync(usuario)).ToList();
+        }
 
-        var roles = await SincronizarRolesErpAsync(usuario, RolesDe(persona));
+        if (roles.Count == 0)
+            return StatusCode(StatusCodes.Status403Forbidden,
+                new { error = "Su acceso no está habilitado." });
+
         var (token, expira) = jwt.Generar(usuario, roles);
         return Ok(new AuthRespuesta(token, expira, usuario.UserName!, usuario.NombreCompleto ?? "", roles));
     }
