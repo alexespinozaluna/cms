@@ -107,6 +107,34 @@ export const reordenarBloques = (paginaId: number, ids: number[]) =>
   req<void>(`paginas/${paginaId}/bloques/orden`, "PUT", { ids });
 export const eliminarBloque = (id: number) => req<void>(`bloques/${id}`, "DELETE");
 
+// ---------- Menú ----------
+
+export interface MenuItem {
+  id: number;
+  padreId: number | null;
+  etiqueta: string;
+  url: string;
+  tipo: string; // contenido | sistema
+  orden: number;
+  estado: string;
+  vigenciaDesde: string | null;
+  vigenciaHasta: string | null;
+}
+
+export interface MenuGuardar {
+  padreId?: number | null;
+  etiqueta: string;
+  url: string;
+  tipo: string;
+  estado: string;
+}
+
+export const listarMenu = () => req<MenuItem[]>("menu", "GET");
+export const crearMenu = (m: MenuGuardar) => req<{ id: number }>("menu", "POST", m);
+export const actualizarMenu = (id: number, m: MenuGuardar) => req<void>(`menu/${id}`, "PUT", m);
+export const reordenarMenu = (ids: number[]) => req<void>("menu/orden", "PUT", { ids });
+export const eliminarMenu = (id: number) => req<void>(`menu/${id}`, "DELETE");
+
 export const listarPaginas = () => req<PaginaAdmin[]>("paginas", "GET");
 export const obtenerPagina = (id: number) => req<PaginaAdmin>(`paginas/${id}`, "GET");
 export const crearPagina = (p: PaginaGuardar) => req<{ id: number }>("paginas", "POST", p);

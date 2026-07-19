@@ -61,6 +61,9 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             <Link href="/admin/paginas" className="hover:text-amarillo">
               Páginas
             </Link>
+            <Link href="/admin/menu" className="hover:text-amarillo">
+              Menú
+            </Link>
           </div>
         </nav>
       </header>

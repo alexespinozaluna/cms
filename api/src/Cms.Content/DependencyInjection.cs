@@ -20,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<IContenidoRepository, ContenidoRepository>();
         services.AddScoped<IAdminPaginasRepository, AdminPaginasRepository>();
         services.AddScoped<IAdminBloquesRepository, AdminBloquesRepository>();
+        services.AddScoped<IAdminMenuRepository, AdminMenuRepository>();
         return services;
     }
 }
