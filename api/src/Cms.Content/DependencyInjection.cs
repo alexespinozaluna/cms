@@ -1,6 +1,7 @@
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using Cms.Content.Admin;
 using Cms.Content.Data;
 using Cms.Content.Repositories;
 
@@ -17,6 +18,7 @@ public static class DependencyInjection
         services.AddSingleton(_ => new NpgsqlDataSourceBuilder(cadenaConexion).Build());
         services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
         services.AddScoped<IContenidoRepository, ContenidoRepository>();
+        services.AddScoped<IAdminPaginasRepository, AdminPaginasRepository>();
         return services;
     }
 }
