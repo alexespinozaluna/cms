@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { CampoEsquema, ValorCampo } from "@/lib/admin-api";
+import { AdminError, subirImagen, type CampoEsquema, type ValorCampo } from "@/lib/admin-api";
+import { resolverMedia } from "@/lib/media";
 
 const INPUT =
   "w-full rounded-lg border border-linea bg-white px-3 py-2 text-sm focus:border-verde focus:outline-none";
@@ -27,6 +28,7 @@ function CampoInput({
   );
 
   if (campo.tipo === "lista") return <CampoLista campo={campo} valor={valor} onChange={onChange} />;
+  if (campo.tipo === "imagen") return <CampoImagen campo={campo} valor={valor} onChange={onChange} />;
 
   switch (campo.tipo) {
     case "textolargo":
@@ -83,6 +85,59 @@ function CampoInput({
         </div>
       );
   }
+}
+
+function CampoImagen({
+  campo,
+  valor,
+  onChange,
+}: {
+  campo: CampoEsquema;
+  valor: ValorCampo;
+  onChange: (v: ValorCampo) => void;
+}) {
+  const [subiendo, setSubiendo] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function alSubir(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSubiendo(true);
+    setError(null);
+    try {
+      const { url } = await subirImagen(file);
+      onChange(url);
+    } catch (err) {
+      setError(err instanceof AdminError ? err.message : "No se pudo subir la imagen.");
+    } finally {
+      setSubiendo(false);
+    }
+  }
+
+  return (
+    <div>
+      <label className="mb-1 block text-sm font-semibold text-verde-osc">
+        {campo.etiqueta}
+        {campo.requerido && <span className="text-rojo"> *</span>}
+      </label>
+      <div className="flex items-center gap-2">
+        <input className={INPUT} placeholder="/media/…" value={str(valor)} onChange={(e) => onChange(e.target.value)} />
+        <label className="shrink-0 cursor-pointer rounded-lg border-2 border-verde px-3 py-2 text-xs font-bold text-verde hover:bg-papel">
+          {subiendo ? "Subiendo…" : "Subir"}
+          <input type="file" accept="image/*" className="hidden" disabled={subiendo} onChange={alSubir} />
+        </label>
+      </div>
+      {error && <p className="mt-1 text-xs text-rojo">{error}</p>}
+      {str(valor) && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={resolverMedia(str(valor))}
+          alt=""
+          className="mt-2 h-20 rounded border border-linea object-contain"
+        />
+      )}
+    </div>
+  );
 }
 
 function CampoLista({

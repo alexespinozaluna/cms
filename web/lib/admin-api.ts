@@ -44,6 +44,23 @@ async function req<T>(path: string, method: string, body?: unknown): Promise<T> 
   return data as T;
 }
 
+/** Sube una imagen a /media (multipart) y devuelve su ruta. */
+export async function subirImagen(file: File, carpeta = "contenido"): Promise<{ url: string }> {
+  const sesion = obtenerSesion();
+  if (!sesion) throw new AdminError("Tu sesión expiró. Inicia sesión de nuevo.");
+  const fd = new FormData();
+  fd.append("archivo", file);
+  fd.append("carpeta", carpeta);
+  const res = await fetch(`${base}/api/admin/media`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${sesion.token}` },
+    body: fd,
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) throw new AdminError(mensajeDeError(res, data));
+  return data as { url: string };
+}
+
 function mensajeDeError(res: Response, data: unknown): string {
   if (data && typeof data === "object") {
     const d = data as Record<string, unknown>;
