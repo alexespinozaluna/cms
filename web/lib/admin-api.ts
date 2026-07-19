@@ -135,6 +135,27 @@ export const actualizarMenu = (id: number, m: MenuGuardar) => req<void>(`menu/${
 export const reordenarMenu = (ids: number[]) => req<void>("menu/orden", "PUT", { ids });
 export const eliminarMenu = (id: number) => req<void>(`menu/${id}`, "DELETE");
 
+// ---------- Usuarios y roles (solo Admin) ----------
+
+export interface UsuarioAdmin {
+  id: string;
+  usuario: string;
+  correo: string;
+  nombre: string | null;
+  esInterno: boolean;
+  roles: string[];
+}
+
+export const listarUsuarios = () => req<UsuarioAdmin[]>("usuarios", "GET");
+export const setRolesInternos = (id: string, roles: string[]) =>
+  req<void>(`usuarios/${id}/roles-internos`, "PUT", { roles });
+export const crearUsuarioInterno = (u: {
+  usuario: string;
+  correo: string;
+  password: string;
+  roles: string[];
+}) => req<void>("usuarios/interno", "POST", u);
+
 export const listarPaginas = () => req<PaginaAdmin[]>("paginas", "GET");
 export const obtenerPagina = (id: number) => req<PaginaAdmin>(`paginas/${id}`, "GET");
 export const crearPagina = (p: PaginaGuardar) => req<{ id: number }>("paginas", "POST", p);
